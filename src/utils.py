@@ -120,6 +120,28 @@ def read_transactions_from_excel(file_path: str = "data/operations.xlsx") -> Lis
 # Утилиты для модуля views.py
 
 
+def convert_date_format(date_str: str = "31.12.2021 16:44:00") -> str:
+    """
+    Преобразует дату из формата DD.MM.YYYY HH:MM:SS в формат YYYY-MM-DD HH:MM:SS
+
+    Параметры:
+    date_str (str): входная строка с датой в формате "DD.MM.YYYY HH:MM:SS"
+
+    Возвращает:
+    str: строка с датой в формате "YYYY-MM-DD HH:MM:SS"
+    """
+    try:
+        # Парсим исходную дату
+        original_format = "%d.%m.%Y %H:%M:%S"
+        new_format = "%Y-%m-%d %H:%M:%S"
+        # Преобразуем строку DD.MM.YYYY HH:MM:SS в объект datetime
+        date_obj = datetime.strptime(date_str, original_format)
+        # Форматируем объект datetime в строку формата YYYY-MM-DD HH:MM:SS
+        return date_obj.strftime(new_format)
+    except ValueError:
+        return "Ошибка: некорректный формат даты"
+
+
 def parse_datetime(date_str):
     """Парсинг входной даты в формате YYYY-MM-DD HH:MM:SS"""
     return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")

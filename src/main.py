@@ -3,7 +3,10 @@ import json
 # from src.views import
 # from src.services import
 # from src.reports import
-from src.utils import read_transactions_from_excel
+from src.utils import read_transactions_from_excel, convert_date_format
+
+
+print(convert_date_format())
 
 
 transactions = read_transactions_from_excel("data/operations.xlsx")
