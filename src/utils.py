@@ -142,9 +142,21 @@ def convert_date_format(date_str: str = "31.12.2021 16:44:00") -> str:
         return "Ошибка: некорректный формат даты"
 
 
-def parse_datetime(date_str):
-    """Парсинг входной даты в формате YYYY-MM-DD HH:MM:SS"""
-    return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+def get_currency_rate():
+    pass
+
+
+def get_stock_price():
+    pass
+
+
+
+
+
+# ====================================================================================================================
+# def parse_datetime(date_str):
+#     """Парсинг входной даты в формате YYYY-MM-DD HH:MM:SS"""
+#     return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
 
 
 def calculate_period(date):
@@ -153,17 +165,6 @@ def calculate_period(date):
     return (date - start_of_month).days
 
 
-def get_greeting(date):
-    """Определение приветствия по времени суток"""
-    hour = date.hour
-    if 5 <= hour < 12:
-        return "Доброе утро"
-    elif 12 <= hour < 18:
-        return "Добрый день"
-    elif 18 <= hour < 23:
-        return "Добрый вечер"
-    else:
-        return "Доброй ночи"
 
 
 # Функции для utils.py
