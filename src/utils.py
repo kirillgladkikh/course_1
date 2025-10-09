@@ -53,15 +53,6 @@ def read_transactions_from_excel(file_path: str = "data/operations.xlsx") -> Lis
             "Бонусы (включая кэшбэк)",
             "Округление на инвесткопилку",
             "Сумма операции с округлением"
-            # "id",
-            # "state",
-            # "date",
-            # "amount",
-            # "currency_name",
-            # "currency_code",
-            # "from",
-            # "to",
-            # "description",
         ]
 
         if not all(column in df.columns for column in required_columns):
@@ -89,15 +80,6 @@ def read_transactions_from_excel(file_path: str = "data/operations.xlsx") -> Lis
                     "total_bonus": row["Бонусы (включая кэшбэк)"],
                     "invest_amount_rounded": row["Округление на инвесткопилку"],
                     "transaction_amount_rounded": row["Сумма операции с округлением"]
-                    # "id": row["id"],
-                    # "state": row["state"],
-                    # "date": row["date"],
-                    # "amount": row["amount"],
-                    # "currency_name": row["currency_name"],
-                    # "currency_code": row["currency_code"],
-                    # "from": row["from"],
-                    # "to": row["to"],
-                    # "description": row["description"],
                 }
 
                 transactions.append(transaction)
@@ -160,10 +142,10 @@ def get_stock_price():
 #     return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
 
 
-def calculate_period(date):
-    """Определение временного периода (начало месяца — текущая дата)"""
-    start_of_month = date.replace(day=1)
-    return (date - start_of_month).days
+# def calculate_period(date):
+#     """Определение временного периода (начало месяца — текущая дата)"""
+#     start_of_month = date.replace(day=1)
+#     return (date - start_of_month).days
 
 
 

@@ -3,7 +3,8 @@ from typing import List, Dict
 
 
 # Основные функции для генерации JSON-ответа
-
+def get_current_time():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 def get_greeting(date_str: str = "2021-12-31 16:44:00") -> str:
     """
@@ -26,6 +27,9 @@ def get_greeting(date_str: str = "2021-12-31 16:44:00") -> str:
 
     except ValueError:
         return "Ошибка: неверный формат даты. Используйте формат 'YYYY-MM-DD HH:MM:SS'"
+
+
+
 
 
 def card_last_digits():
