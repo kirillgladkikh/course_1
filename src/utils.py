@@ -65,7 +65,7 @@ def read_transactions_from_excel(file_path: str = "data/operations.xlsx") -> Lis
         ]
 
         if not all(column in df.columns for column in required_columns):
-            print(required_columns)
+            print(column)
             raise ValueError("Файл Excel не содержит все необходимые столбцы")
 
         transactions = []
@@ -101,6 +101,7 @@ def read_transactions_from_excel(file_path: str = "data/operations.xlsx") -> Lis
                 }
 
                 transactions.append(transaction)
+                # print("transactions.append(transaction) - done")
 
             except Exception as e:
                 print(f"Ошибка при обработке строки: {row}. Причина: {str(e)}")
