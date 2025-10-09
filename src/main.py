@@ -1,6 +1,6 @@
 import os
 import json
-from src.views import views_main_page, get_greeting, get_current_time
+from src.views import get_transactions_filtered, get_greeting, get_current_time, get_cards_data
 # from src.services import
 # from src.reports import
 from src.utils import read_transactions_from_excel, convert_date_format
@@ -36,8 +36,8 @@ json_answer_common_page["stock_prices"] = [
 transactions_full = read_transactions_from_excel("data/operations.xlsx")
 
 # Получаем список транзакций для заданного диапазона дат
-transactions_filtered= views_main_page(transactions_full, "2021-12-31 16:44:00")
-# print(f"transactions_filtered {len(transactions_filtered)}")
+transactions_filtered= get_transactions_filtered(transactions_full, "2021-12-31 16:44:00")
+print(f"transactions_filtered {len(transactions_filtered)} {type(transactions_filtered)}")
 
 # Формируем приветствие в зависимости от текущего времени
 local_time = get_current_time()
@@ -45,12 +45,28 @@ greeting = get_greeting(local_time)
 # print(greeting)
 
 # Записываем приветствие (значение greeting) в итоговый список
+
+# Очищаем существующий массив
+json_answer_common_page["greeting"].clear()
+
+# Добавляем элемент
 json_answer_common_page["greeting"] = greeting
 # print(json_answer_common_page)
 
 # Формируем список транзакций по картам - по условиям
+cards_list = get_cards_data(transactions_filtered)
+print(len(cards_list))
+print(cards_list)
 
 # Записываем список транзакций по картам в итоговый список
+
+# Очищаем существующий массив
+json_answer_common_page["cards"].clear()
+
+# Добавляем каждый элемент
+for card in cards_list:
+    json_answer_common_page["cards"].append(card)
+print(json_answer_common_page)
 
 # Формируем ТОП-список транзакций - по условиям
 

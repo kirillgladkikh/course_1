@@ -1,3 +1,4 @@
+import math
 from datetime import datetime, timedelta
 from typing import List, Dict
 
@@ -29,7 +30,9 @@ def get_greeting(date_str: str = "2021-12-31 16:44:00") -> str:
         return "Ошибка: неверный формат даты. Используйте формат 'YYYY-MM-DD HH:MM:SS'"
 
 
-
+def card_to_json(transactions_filtered: List[Dict], date_str: str = "2021-12-31 16:44:00"):
+    """ """
+    return
 
 
 def card_last_digits():
@@ -59,7 +62,7 @@ def stock_prices():
 
 
 # ===================================================================================================================
-def views_main_page(transactions_full: List[Dict], date_str: str = "2021-12-31 16:44:00")-> List[Dict]:
+def get_transactions_filtered(transactions_full: List[Dict], date_str: str = "2021-12-31 16:44:00")-> List[Dict]:
     """
     Основная функция для генерации JSON-ответов.
     Фильтрует транзакции по дате: от начала месяца до указанной даты.
@@ -107,6 +110,96 @@ def views_main_page(transactions_full: List[Dict], date_str: str = "2021-12-31 1
         #     continue
 
     return filtered_transactions
+
+
+def get_cards_data(transactions_filtered: list) -> list:
+    """
+    Анализирует список транзакций и агрегирует данные по банковским картам.
+
+    Функция обрабатывает список транзакций, группируя их по последним 4 цифрам
+    номера карты. Для каждой карты подсчитывается общая сумма потраченных средств
+    и накопленный кешбэк.
+
+    Параметры:
+    transactions_filtered (list): список словарей с данными транзакций, где каждый
+        словарь содержит следующие ключи:
+        - card_number: номер карты (может быть строкой или числом)
+        - transaction_amount: сумма транзакции (число или строка с числом)
+        - cashback_amount: сумма кешбэка (число или строка с числом)
+
+    Возвращает:
+    list: список словарей с агрегированными данными по картам, где каждый словарь
+        содержит:
+        - last_digits: последние 4 цифры номера карты
+        - total_spent: общая сумма потраченных средств
+        - cashback: накопленный кешбэк
+
+    Особые случаи:
+    - Транзакции без номера карты игнорируются
+    - При ошибках преобразования числовых значений транзакция пропускается
+    - Номера карт обрабатываются как строки для корректной работы с ведущими нулями
+    """
+    # Создаем словарь для хранения результатов по картам
+    result = {}
+
+    # Проходим по всем транзакциям
+    for transaction in transactions_filtered:
+
+        # Игнорируем строки без данных карт
+        # print(f'transaction["card_number"]: {transaction["card_number"]} {type(transaction["card_number"])}')
+        if type(transaction["card_number"]) != float:
+
+            # Извлекаем последние 4 цифры карты
+            # print(f'transaction["card_number"]: {transaction["card_number"]} {type(transaction["card_number"])}')
+            card_number = str(transaction["card_number"])
+            last_digits = card_number[-4:]  # Берем последние 4 символа
+
+            # Получаем сумму транзакции и кешбэк
+            try:
+                # Преобразуем строки в числа, если они хранятся как строки
+                # transaction_amount = float(transaction["transaction_amount"])
+
+                # Фильтруем nan
+                transaction_amount = (
+                    0.0
+                    if math.isnan(float(transaction["transaction_amount"]))
+                    else float(transaction["transaction_amount"])
+                )
+
+                # Фильтруем nan
+                cashback_amount = (
+                    0.0
+                    if math.isnan(float(transaction["cashback_amount"]))
+                    else float(transaction["cashback_amount"])
+                )
+
+                print(
+                    f'transaction["cashback_amount"]: {transaction["cashback_amount"]} {type(transaction["cashback_amount"])}')
+                print(f'cashback_amount: {cashback_amount} {type(cashback_amount)}')
+
+            except ValueError:
+                print(f"Ошибка преобразования данных для карты {last_digits}")
+                continue
+
+            # Если карта еще не в результатах, добавляем её
+            if last_digits not in result:
+                result[last_digits] = {
+                    "last_digits": last_digits,
+                    "total_spent": 0.0,
+                    "cashback": 0.0
+                }
+
+            # Накапливаем суммы
+            result[last_digits]["total_spent"] += round(transaction_amount, 2)
+            result[last_digits]["cashback"] += round(cashback_amount, 2)
+
+        else:
+            print(f"строка {transaction} не содержит данных карты")
+
+
+
+    # Преобразуем словарь в список
+    return list(result.values())
 
 
 def views_main_eventspage():
