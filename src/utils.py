@@ -1,5 +1,7 @@
 import os
 import pandas as pd
+import math
+from decimal import Decimal
 from typing import Dict, List
 from datetime import datetime
 
@@ -56,30 +58,30 @@ def read_transactions_from_excel(file_path: str = "data/operations.xlsx") -> Lis
         ]
 
         if not all(column in df.columns for column in required_columns):
-            print(column)
+            # print(column)
             raise ValueError("Файл Excel не содержит все необходимые столбцы")
 
         transactions = []
 
         for _, row in df.iterrows():
             try:
-                # Преобразуем данные в нужный формат
+                # Преобразуем данные с учетом типов
                 transaction = {
-                    "transaction_date": row["Дата операции"],
-                    "payment_date": row["Дата платежа"],
-                    "card_number": row["Номер карты"],
-                    "transaction_status": row["Статус"],
-                    "transaction_amount": row["Сумма операции"],
-                    "transaction_currency": row["Валюта операции"],
-                    "payment_amount": row["Сумма платежа"],
-                    "payment_currency": row["Валюта платежа"],
-                    "cashback_amount": row["Кэшбэк"],
-                    "transaction_category": row["Категория"],
-                    "transaction_code": row["MCC"],
-                    "transaction_description": row["Описание"],
-                    "total_bonus": row["Бонусы (включая кэшбэк)"],
-                    "invest_amount_rounded": row["Округление на инвесткопилку"],
-                    "transaction_amount_rounded": row["Сумма операции с округлением"]
+                    "transaction_date": pd.to_datetime(row["Дата операции"], format="mixed"),  # type: datetime
+                    "payment_date": pd.to_datetime(row["Дата платежа"], format="mixed"),  # type: datetime
+                    "card_number": str(row["Номер карты"]),  # type: str
+                    "transaction_status": str(row["Статус"]),  # type: str
+                    "transaction_amount": Decimal('0.0') if math.isnan(float(row["Сумма операции"])) else Decimal(str(row["Сумма платежа"])),  # type: Decimal
+                    "transaction_currency": str(row["Валюта операции"]),  # type: str
+                    "payment_amount": Decimal(str(row["Сумма платежа"])),  # type: Decimal
+                    "payment_currency": str(row["Валюта платежа"]),  # type: str
+                    "cashback_amount": Decimal('0.0') if math.isnan(float(row["Кэшбэк"])) else Decimal(str(row["Кэшбэк"])),  # type: Decimal
+                    "transaction_category": str(row["Категория"]),  # type: str
+                    "transaction_code": str(row["MCC"]),  # type: str
+                    "transaction_description": str(row["Описание"]),  # type: str
+                    "total_bonus": Decimal(str(row["Бонусы (включая кэшбэк)"])),  # type: Decimal
+                    "invest_amount_rounded": Decimal(str(row["Округление на инвесткопилку"])),  # type: Decimal
+                    "transaction_amount_rounded": Decimal(str(row["Сумма операции с округлением"]))  # type: Decimal
                 }
 
                 transactions.append(transaction)

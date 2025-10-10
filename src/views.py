@@ -190,8 +190,8 @@ def get_cards_data(transactions_filtered: list) -> list:
                 }
 
             # Накапливаем суммы
-            result[last_digits]["total_spent"] += round(transaction_amount, 2)
-            result[last_digits]["cashback"] += round(cashback_amount, 2)
+            result[last_digits]["total_spent"] += transaction_amount
+            result[last_digits]["cashback"] += cashback_amount
 
         else:
             print(f"строка {transaction} не содержит данных карты")
