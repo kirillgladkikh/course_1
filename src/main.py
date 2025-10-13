@@ -53,33 +53,33 @@ transactions_filtered= get_transactions_filtered(transactions_full, Timestamp('2
 
 # Формируем приветствие в зависимости от текущего времени
 current_datetime  = datetime.now()
-greeting = get_greeting(current_datetime )
+greeting = get_greeting(current_datetime)
 print(greeting)
 
-# # Записываем приветствие (значение greeting) в итоговый список
-#
-# # Очищаем существующий массив
-# json_answer_common_page["greeting"].clear()
-#
-# # Добавляем элемент
-# json_answer_common_page["greeting"] = greeting
-# # print(json_answer_common_page)
-#
-# # Формируем список транзакций по картам - по условиям
-# cards_list = get_cards_data(transactions_filtered)
-# print(len(cards_list))
-# print(cards_list)
-#
-# # Записываем список транзакций по картам в итоговый список
-#
-# # Очищаем существующий массив
-# json_answer_common_page["cards"].clear()
-#
-# # Добавляем каждый элемент
-# for card in cards_list:
-#     json_answer_common_page["cards"].append(card)
-# print(json_answer_common_page)
-#
+# Записываем приветствие (значение greeting) в итоговый список
+
+# Очищаем существующий массив
+json_answer_common_page["greeting"] = ""
+
+# Добавляем элемент
+json_answer_common_page["greeting"] = greeting
+print(json_answer_common_page)
+
+# Формируем список транзакций по картам - по условиям
+cards_list = get_cards_data(transactions_filtered)
+print(len(cards_list))
+print(cards_list)
+
+# Записываем список транзакций по картам в итоговый список
+
+# Очищаем существующий массив
+json_answer_common_page["cards"].clear()
+
+# Добавляем каждый элемент
+for card in cards_list:
+    json_answer_common_page["cards"].append(card)
+print(json_answer_common_page)
+
 # # Формируем ТОП-список транзакций - по условиям
 #
 # # Записываем ТОП-список транзакций в итоговый список

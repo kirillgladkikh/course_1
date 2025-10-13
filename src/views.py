@@ -2,6 +2,7 @@ import math
 from datetime import datetime, timedelta
 from typing import List, Dict, Union
 from pandas import Timestamp
+from decimal import Decimal
 
 
 # Основные функции для генерации JSON-ответа
@@ -134,7 +135,7 @@ def get_cards_data(transactions_filtered: list) -> list:
     Особые случаи:
     - Транзакции без номера карты игнорируются
     - При ошибках преобразования числовых значений транзакция пропускается
-    - Номера карт обрабатываются как строки для корректной работы с ведущими нулями
+    ??????????????????????????- Номера карт обрабатываются как строки для корректной работы с ведущими нулями
     """
     # Создаем словарь для хранения результатов по картам
     result = {}
@@ -144,11 +145,11 @@ def get_cards_data(transactions_filtered: list) -> list:
 
         # Игнорируем строки без данных карт
         # print(f'transaction["card_number"]: {transaction["card_number"]} {type(transaction["card_number"])}')
-        if type(transaction["card_number"]) != float:
+        if transaction["card_number"] != "":
 
             # Извлекаем последние 4 цифры карты
             # print(f'transaction["card_number"]: {transaction["card_number"]} {type(transaction["card_number"])}')
-            card_number = str(transaction["card_number"])
+            card_number = transaction["card_number"]
             last_digits = card_number[-4:]  # Берем последние 4 символа
 
             # Получаем сумму транзакции и кешбэк
@@ -156,23 +157,25 @@ def get_cards_data(transactions_filtered: list) -> list:
                 # Преобразуем строки в числа, если они хранятся как строки
                 # transaction_amount = float(transaction["transaction_amount"])
 
-                # Фильтруем nan
-                transaction_amount = (
-                    0.0
-                    if math.isnan(float(transaction["transaction_amount"]))
-                    else float(transaction["transaction_amount"])
-                )
+                transaction_amount = transaction["transaction_amount"]
+                cashback_amount = transaction["cashback_amount"]
 
-                # Фильтруем nan
-                cashback_amount = (
-                    0.0
-                    if math.isnan(float(transaction["cashback_amount"]))
-                    else float(transaction["cashback_amount"])
-                )
+                # # Фильтруем nan
+                # transaction_amount = (
+                #     Decimal('0.00')
+                #     if math.isnan(Decimal(str(transaction["transaction_amount"])))
+                #     else Decimal(str(transaction["transaction_amount"]))
+                # )
+                #
+                # # Фильтруем nan
+                # cashback_amount = (
+                #     Decimal('0.00')
+                #     if math.isnan(Decimal(str(transaction["cashback_amount"])))
+                #     else Decimal(str(transaction["cashback_amount"]))
+                # )
 
-                print(
-                    f'transaction["cashback_amount"]: {transaction["cashback_amount"]} {type(transaction["cashback_amount"])}')
-                print(f'cashback_amount: {cashback_amount} {type(cashback_amount)}')
+                # print(f'transaction["cashback_amount"]: {transaction["cashback_amount"]} {type(transaction["cashback_amount"])}')
+                # print(f'cashback_amount: {cashback_amount} {type(cashback_amount)}')
 
             except ValueError:
                 print(f"Ошибка преобразования данных для карты {last_digits}")
@@ -182,8 +185,8 @@ def get_cards_data(transactions_filtered: list) -> list:
             if last_digits not in result:
                 result[last_digits] = {
                     "last_digits": last_digits,
-                    "total_spent": 0.0,
-                    "cashback": 0.0
+                    "total_spent": Decimal('0.00'),
+                    "cashback": Decimal('0.00')
                 }
 
             # Накапливаем суммы
