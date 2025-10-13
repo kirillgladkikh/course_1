@@ -198,10 +198,60 @@ def get_cards_data(transactions_filtered: list) -> list:
         else:
             print(f"строка {transaction} не содержит данных карты")
 
-
-
     # Преобразуем словарь в список
     return list(result.values())
+
+
+def get_top_transactions(transactions_filtered: list) -> list:
+
+
+  "top_transactions": [
+    {
+      "date": "21.12.2021",
+      "amount": 1198.23,
+      "category": "Переводы",
+      "description": "Перевод Кредитная карта. ТП 10.2 RUR"
+    },
+    {
+      "date": "20.12.2021",
+      "amount": 829.00,
+      "category": "Супермаркеты",
+      "description": "Лента"
+    },
+    {
+      "date": "20.12.2021",
+      "amount": 421.00,
+      "category": "Различные товары",
+      "description": "Ozon.ru"
+    },
+    {
+      "date": "16.12.2021",
+      "amount": -14216.42,
+      "category": "ЖКХ",
+      "description": "ЖКУ Квартира"
+    },
+    {
+      "date": "16.12.2021",
+      "amount": 453.00,
+      "category": "Бонусы",
+      "description": "Кешбэк за обычные покупки"
+    }
+  ],
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def views_main_eventspage():
