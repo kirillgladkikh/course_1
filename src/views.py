@@ -86,7 +86,7 @@ def get_transactions_filtered(transactions_full: List[Dict], target_datetime: Un
 
     for transaction in transactions_full:
 
-        # try:
+        try:
             # Получаем дату транзакции
             date_obj = transaction["transaction_date"]
 
@@ -105,56 +105,11 @@ def get_transactions_filtered(transactions_full: List[Dict], target_datetime: Un
 
                 # print(f"transaction in filtered_transactions {filtered_transactions[-1]}")
 
-        # except (KeyError, ValueError) as e:
-        #     print(f"Ошибка при обработке транзакции: {e}")
-        #     continue
+        except (KeyError, ValueError) as e:
+            print(f"Ошибка при обработке транзакции: {e}")
+            continue
 
     return filtered_transactions
-
-
-
-
-
-
-    # # print(f"transactions_full = {len(transactions_full)}")
-    #
-    # # Преобразуем входную строку в объект datetime
-    # # target_datetime = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
-    # # print(f"target_datetime: {target_datetime} {type(target_datetime)}")
-    #
-    # # Получаем первый день месяца для указанной даты
-    # first_day_of_month = target_datetime.replace(day=1, hour=0, minute=0, second=0)
-    # # print(f"first_day_of_month: {first_day_of_month} {type(first_day_of_month)}")
-    #
-    # # Создаем пустой список для отфильтрованных транзакций
-    # filtered_transactions = []
-    #
-    # # Проходим по всем транзакциям
-    # for transaction in transactions_full:
-    #     # try:
-    #
-    #     # Парсим исходную дату транзакции и форматируем ее в нужный формат
-    #     date_obj = transaction["transaction_date"]
-    #     # date_obj = datetime.strptime(transaction["transaction_date"], "%d.%m.%Y %H:%M:%S") # type data
-    #     # # print(f"date_obj: {date_obj} {type(date_obj)}")
-    #     # date_obj_1 = date_obj.strftime("%Y-%m-%d %H:%M:%S") # type str
-    #     # # print(f"date_obj_1: {date_obj_1} {type(date_obj_1)}")
-    #     # transaction_date = datetime.strptime(target_datetime, "%Y-%m-%d %H:%M:%S") #type data
-    #     # print(f"transaction_date: {transaction_date} {type(transaction_date)}")
-    #
-    #     print(f"first_day_of_month {first_day_of_month} <= date_obj {date_obj} <= target_datetime {target_datetime}")
-    #
-    #     # Проверяем, попадает ли дата транзакции в нужный диапазон
-    #     if (first_day_of_month <= date_obj <= target_datetime):
-    #         filtered_transactions.append(transaction)
-    #
-    #         print(f"filtered_transactions {filtered_transactions}")
-    #
-    #     # except (KeyError, ValueError):
-    #     #     # Пропускаем транзакции с некорректной датой
-    #     #     continue
-    #
-    # return filtered_transactions
 
 
 def get_cards_data(transactions_filtered: list) -> list:
