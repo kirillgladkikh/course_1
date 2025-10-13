@@ -5,17 +5,14 @@ from pandas import Timestamp
 
 
 # Основные функции для генерации JSON-ответа
-def get_current_time():
-    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-def get_greeting(date_str: str = "2021-12-31 16:44:00") -> str:
+def get_greeting(date: datetime) -> str:
     """
     Определение приветствия по времени суток
-    Принимает строку в формате 'YYYY-MM-DD HH:MM:SS'
+    Принимает объект datetime в формате 'YYYY-MM-DD HH:MM:SS'
     """
     try:
-        # Парсим строку в объект datetime
-        date = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+        # Получаем час из объекта datetime
         hour = date.hour
 
         if 5 <= hour < 12:
@@ -27,8 +24,8 @@ def get_greeting(date_str: str = "2021-12-31 16:44:00") -> str:
         else:
             return "Доброй ночи"
 
-    except ValueError:
-        return "Ошибка: неверный формат даты. Используйте формат 'YYYY-MM-DD HH:MM:SS'"
+    except AttributeError:
+        return "Ошибка: передан неверный тип данных. Ожидается объект datetime"
 
 
 def card_to_json(transactions_filtered: List[Dict], date_str: str = "2021-12-31 16:44:00"):

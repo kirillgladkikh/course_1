@@ -113,7 +113,7 @@ def read_transactions_from_excel(file_path: str = "data/operations.xlsx") -> Lis
                 # Преобразуем данные с учетом типов
                 transaction = {
                     "transaction_date": pd.to_datetime(row["Дата операции"], dayfirst=True, errors='coerce'),  # type: datetime  # указываем, что день идет первым  # для некорректных дат вернет NaT
-                    "payment_date": pd.to_datetime(row["Дата платежа"], dayfirst=True, errors='coerce'),  # type: datetime
+                    "payment_date": pd.to_datetime(row["Дата платежа"], dayfirst=True, errors='coerce'),  # type: datetime  # указываем, что день идет первым  # для некорректных дат вернет NaT
                     "card_number": "" if str(row["Номер карты"]) == "nan" else str(row["Номер карты"]),  # type: str
                     "transaction_status": "" if str(row["Статус"]) == "nan" else str(row["Статус"]),  # type: str
                     "transaction_amount": safe_convert(str(row["Сумма платежа"])),  # type: Decimal
