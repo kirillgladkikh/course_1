@@ -1,5 +1,6 @@
 import os
 import json
+from pandas import Timestamp
 from decimal import Decimal
 from src.views import get_transactions_filtered, get_greeting, get_current_time, get_cards_data
 # from src.services import
@@ -35,13 +36,19 @@ json_answer_common_page["stock_prices"] = [
 
 # Считываем транзакции из файла xlsx в список
 transactions_full = read_transactions_from_excel("data/operations.xlsx")
-# Выводим первые 5 элементов
-for item in transactions_full[:10]:
+# Выводим первые N элементов
+for item in transactions_full[:150]:
     print(item)
 
-# # Получаем список транзакций для заданного диапазона дат
-# transactions_filtered= get_transactions_filtered(transactions_full, "2021-12-31 16:44:00")
-# print(f"transactions_filtered {len(transactions_filtered)} {type(transactions_filtered)}")
+print(f"transactions_full {len(transactions_full)} {type(transactions_full)}")
+
+# Получаем список транзакций для заданного диапазона дат
+transactions_filtered= get_transactions_filtered(transactions_full, Timestamp('2021-12-31 16:44:00'))
+# for transaction in transactions_filtered:
+#     print(transactions_filtered)
+
+print(f"transactions_full {len(transactions_full)} {type(transactions_full)}")
+print(f"transactions_filtered {len(transactions_filtered)} {type(transactions_filtered)}")
 #
 # # Формируем приветствие в зависимости от текущего времени
 # local_time = get_current_time()
