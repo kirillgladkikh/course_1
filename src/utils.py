@@ -5,6 +5,51 @@ from decimal import Decimal
 from typing import Dict, List
 from datetime import datetime
 
+
+def safe_convert(value: str) -> Decimal:
+    """
+    Безопасное преобразование строкового значения в Decimal с сохранением двух знаков после запятой.
+
+    Параметры:
+    value (str): входная строка для преобразования
+
+    Возвращает:
+    Decimal: преобразованное значение с двумя знаками после запятой или 0.00 при ошибке
+    """
+    try:
+        # Проверка на пустые строки и NaN
+        if not value.strip() or value.lower() == 'nan':
+            return Decimal('0.00')
+
+        # Замена запятой на точку для корректного преобразования
+        value = value.replace(',', '.')
+
+        # Удаление лишних пробелов
+        value = value.strip()
+
+        # Обработка случая с разделителем тысяч
+        if '.' in value:
+            # Разделяем целую и дробную части
+            parts = value.split('.')
+            # Если после точки только нули или одна цифра, считаем это разделителем тысяч
+            if len(parts) == 2 and (len(parts[1]) == 1 or parts[1] == '00'):
+                value = parts[0].replace('.', '') + '.' + parts[1]
+
+        # Проверка на пустую строку после обработки
+        if not value:
+            return Decimal('0.00')
+
+        # Преобразование в Decimal
+        decimal_value = Decimal(value)
+
+        # Форматирование до двух знаков после запятой
+        return decimal_value.quantize(Decimal('0.00'))
+
+    except (ValueError, TypeError):
+        # Обработка ошибок преобразования
+        return Decimal('0.00')
+
+
 # Чтение из XLS-файла в список словарей
 def read_transactions_from_excel(file_path: str = "data/operations.xlsx") -> List[Dict]:
     """
@@ -69,23 +114,22 @@ def read_transactions_from_excel(file_path: str = "data/operations.xlsx") -> Lis
                 transaction = {
                     "transaction_date": pd.to_datetime(row["Дата операции"], format="mixed"),  # type: datetime
                     "payment_date": pd.to_datetime(row["Дата платежа"], format="mixed"),  # type: datetime
-                    "card_number": str(row["Номер карты"]),  # type: str
-                    "transaction_status": str(row["Статус"]),  # type: str
-                    "transaction_amount": Decimal('0.0') if math.isnan(float(row["Сумма операции"])) else Decimal(str(row["Сумма платежа"])),  # type: Decimal
-                    "transaction_currency": str(row["Валюта операции"]),  # type: str
-                    "payment_amount": Decimal(str(row["Сумма платежа"])),  # type: Decimal
-                    "payment_currency": str(row["Валюта платежа"]),  # type: str
-                    "cashback_amount": Decimal('0.0') if math.isnan(float(row["Кэшбэк"])) else Decimal(str(row["Кэшбэк"])),  # type: Decimal
-                    "transaction_category": str(row["Категория"]),  # type: str
-                    "transaction_code": str(row["MCC"]),  # type: str
-                    "transaction_description": str(row["Описание"]),  # type: str
-                    "total_bonus": Decimal(str(row["Бонусы (включая кэшбэк)"])),  # type: Decimal
-                    "invest_amount_rounded": Decimal(str(row["Округление на инвесткопилку"])),  # type: Decimal
-                    "transaction_amount_rounded": Decimal(str(row["Сумма операции с округлением"]))  # type: Decimal
+                    "card_number": "" if str(row["Номер карты"]) == "nan" else str(row["Номер карты"]),  # type: str
+                    "transaction_status": "" if str(row["Статус"]) == "nan" else str(row["Статус"]),  # type: str
+                    "transaction_amount": safe_convert(str(row["Сумма платежа"])),  # type: Decimal
+                    "transaction_currency": "" if str(row["Валюта операции"]) == "nan" else str(row["Валюта операции"]),  # type: str
+                    "payment_amount": safe_convert(str(row["Сумма платежа"])),  # type: Decimal
+                    "payment_currency": "" if str(row["Валюта платежа"]) == "nan" else str(row["Валюта платежа"]),  # type: str
+                    "cashback_amount": safe_convert(str(row["Кэшбэк"])),  # type: Decimal
+                    "transaction_category": "" if str(row["Категория"]) == "nan" else str(row["Категория"]),  # type: str
+                    "transaction_code": "" if str(row["MCC"]) == "nan" else str(row["MCC"]),  # type: str
+                    "transaction_description": "" if str(row["Описание"]) == "nan" else str(row["Описание"]),  # type: str
+                    "total_bonus": safe_convert(str(row["Бонусы (включая кэшбэк)"])),  # type: Decimal
+                    "invest_amount_rounded": safe_convert(str(row["Округление на инвесткопилку"])),  # type: Decimal
+                    "transaction_amount_rounded": safe_convert(str(row["Сумма операции с округлением"])),  # type: Decimal
                 }
 
                 transactions.append(transaction)
-                # print("transactions.append(transaction) - done")
 
             except Exception as e:
                 print(f"Ошибка при обработке строки: {row}. Причина: {str(e)}")
