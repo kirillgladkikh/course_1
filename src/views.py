@@ -1,9 +1,12 @@
+import os
+import requests
 import math
 import heapq
 from datetime import datetime, timedelta
 from typing import List, Dict, Union
 from pandas import Timestamp
 from decimal import Decimal
+from dotenv import load_dotenv
 
 
 # Основные функции для генерации JSON-ответа
@@ -28,37 +31,6 @@ def get_greeting(date: datetime) -> str:
 
     except AttributeError:
         return "Ошибка: передан неверный тип данных. Ожидается объект datetime"
-
-
-def card_to_json(transactions_filtered: List[Dict], date_str: str = "2021-12-31 16:44:00"):
-    """ """
-    return
-
-
-def card_last_digits():
-    pass
-
-
-def card_total_spent():
-    pass
-
-
-def card_cashback():
-    pass
-
-
-def top_transactions():
-    pass
-
-
-def currency_rates():
-    pass
-
-
-def stock_prices():
-    pass
-
-
 
 
 # ===================================================================================================================
@@ -166,20 +138,6 @@ def get_cards_data(transactions_filtered: List[Dict]) -> List[Dict]:
                 transaction_amount = transaction["transaction_amount"]
                 cashback_amount = transaction["cashback_amount"]
 
-                # # Фильтруем nan
-                # transaction_amount = (
-                #     Decimal('0.00')
-                #     if math.isnan(Decimal(str(transaction["transaction_amount"])))
-                #     else Decimal(str(transaction["transaction_amount"]))
-                # )
-                #
-                # # Фильтруем nan
-                # cashback_amount = (
-                #     Decimal('0.00')
-                #     if math.isnan(Decimal(str(transaction["cashback_amount"])))
-                #     else Decimal(str(transaction["cashback_amount"]))
-                # )
-
                 # print(f'transaction["cashback_amount"]: {transaction["cashback_amount"]} {type(transaction["cashback_amount"])}')
                 # print(f'cashback_amount: {cashback_amount} {type(cashback_amount)}')
 
@@ -231,10 +189,11 @@ def top_transactions_to_json(top_transactions: List[Dict]) -> List[Dict]:
     Returns:
         список сокращенных транзакций с основными полями
     """
+    # Создаем новый список для транзакций
     result = []
 
     for transaction in top_transactions:
-        # Создаем новый словарь с нужными полями
+        # Создаем новый список с нужными полями
         top_transaction = {
             "date": transaction["transaction_date"],  #.strftime('%Y-%m-%d') if transaction["transaction_date"] else "",
             "amount": transaction["transaction_amount"],
@@ -270,11 +229,227 @@ def get_top_transactions_test() -> List[Dict]:
     return top_transactions
 
 
+# API
+    # ссылка на маркетплейс API-сервисов: https://marketplace.apilayer.com/
+
+    # На дату запроса забираем:
+    # курсы валют (валюты берем из файла user_settings.json)
+    # стоимость акций (акции берем из файла user_settings.json)
+
+    # курсы валют (валюты берем из файла user_settings.json)
+
+load_dotenv(".env")
+
+API_KEY = os.getenv("API_KEY_EXCHANGE_RATES")
+
+def get_currency_rates(user_currencies: list) -> list:
+    """ """
+
+    # Создаем список для хранения результатов по валютам
+    result = []
+
+    rate = "1.0"
+
+    for item in user_currencies:
+        currency = item
+
+        # ссылка на сервис: https://marketplace.apilayer.com/exchangerates_data-api?utm_source=apilayermarketplace&utm_medium=featured
+        url = f"https://api.apilayer.com/exchangerates_data/convert?to=RUB&from={currency}&amount={rate}"
+        headers = {"apikey": API_KEY}
+
+        # Выполняем GET-запрос к сайту и сохраняем ответ в переменную response
+        response = requests.get(url, headers=headers)
+
+        data = response.json()  # Преобразуем ответ в словарь
+
+        if "result" in data:
+            # Извлекаем из API-запроса сумму транзакции в рублях
+            amount = data["result"]
+        else:
+            print("==============Предупреждение: операция без result")
+
+        # Получаем статус-код из ответа и выводим его на экран
+        status_code = response.status_code
+        print(f"Статус код: {status_code}")
+
+        # Проверяем, равен ли статус-код 200, то есть чтобы запрос был успешным
+        if status_code == 200:
+            # Выводим содержимое сайта на экран
+            content = response.text
+            print(f"Содержимое сайта:\n{content}")
+        else:
+            # Выводим сообщение об ошибке
+            print(f"Запрос не был успешным. Возможная причина: {response.reason}")
+
+        # Создаем новый список с нужными полями
+        currency_rates = {
+            "currency": currency,
+            "rate": amount
+        }
+
+        result.append(currency_rates)
+
+    return result
+
+# стоимость акций (акции берем из файла user_settings.json)
+def get_stock_prices(user_stocks: list) -> list:
+    """ """
+
+    # Создаем список для хранения результатов по валютам
+    result = []
+
+    rate = "1.0"
+
+    for item in user_stocks:
+        stock = item
+
+        # ссылка на сервис: https://marketplace.apilayer.com/exchangerates_data-api?utm_source=apilayermarketplace&utm_medium=featured
+        # ссылка на сервис: https://marketplace.apilayer.com/marketstack-api?utm_source=apilayermarketplace&utm_medium=featured
+
+        # ИСПОЛЬЗУЙ ЭТО:
+        # https://site.financialmodelingprep.com/developer/docs/pricing
+        # https://site.financialmodelingprep.com/developer/docs
+        # https://site.financialmodelingprep.com/developer/docs/stable/search-company-screener
+
+        # ИСПОЛЬЗУЙ ЭТО +++:
+        # https://site.financialmodelingprep.com/developer/docs/stable/peers
+        # https://financialmodelingprep.com/stable/stock-peers?symbol=AAPL
+        # RESPONSE:
+        # [
+        #     {
+        #         "symbol": "GPRO",
+        #         "companyName": "GoPro, Inc.",
+        #         "price": 0.9668,
+        #         "mktCap": 152173717
+        #     }
+        # ]
+
+        # https://financialmodelingprep.com/stable/search-exchange-variants?symbol=AAPL
+        # RESPONSE:
+        # [
+        #     {
+        #         "symbol": "AAPL",
+        #         "price": 225.46,
+        #         "beta": 1.24,
+        #         "volAvg": 54722288,
+        #         "mktCap": 3427916386000,
+        #         "lastDiv": 1,
+        #         "range": "164.08-237.23",
+        #         "changes": -7.54,
+        #         "companyName": "Apple Inc.",
+        #         "currency": "USD",
+        #         "cik": "0000320193",
+        #         "isin": "US0378331005",
+        #         "cusip": "037833100",
+        #         "exchange": "NASDAQ Global Select",
+        #         "exchangeShortName": "NASDAQ",
+        #         "industry": "Consumer Electronics",
+        #         "website": "https://www.apple.com",
+        #         "description": "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide. The company offers iPhone, a line of smartphones; Mac, a line of personal computers; iPad, a line of multi-purpose tablets; and wearables, home, and accessories comprising AirPods, Apple TV, Apple Watch, Beats products, and HomePod. It also provides AppleCare support and cloud services; and operates various platforms, including the App Store that allow customers to discov...",
+        #         "ceo": "Mr. Timothy D. Cook",
+        #         "sector": "Technology",
+        #         "country": "US",
+        #         "fullTimeEmployees": "161000",
+        #         "phone": "408 996 1010",
+        #         "address": "One Apple Park Way",
+        #         "city": "Cupertino",
+        #         "state": "CA",
+        #         "zip": "95014",
+        #         "dcfDiff": 62.45842,
+        #         "dcf": 161.68157666868984,
+        #         "image": "https://financialmodelingprep.com/image-stock/AAPL.png",
+        #         "ipoDate": "1980-12-12",
+        #         "defaultImage": false,
+        #         "isEtf": false,
+        #         "isActivelyTrading": true,
+        #         "isAdr": false,
+        #         "isFund": false
+        #     }
+        # ]
+        url = f"https://financialmodelingprep.com/stable/stock-peers?symbol={stock}"
+        headers = {"apikey": API_KEY}
+
+        # Выполняем GET-запрос к сайту и сохраняем ответ в переменную response
+        response = requests.get(url, headers=headers)
+
+        data = response.json()  # Преобразуем ответ в словарь
+
+        if "result" in data:
+            # Извлекаем из API-запроса сумму транзакции в рублях
+            amount = data["result"]
+        else:
+            print("==============Предупреждение: операция без result")
+
+        # Получаем статус-код из ответа и выводим его на экран
+        status_code = response.status_code
+        print(f"Статус код: {status_code}")
+
+        # Проверяем, равен ли статус-код 200, то есть чтобы запрос был успешным
+        if status_code == 200:
+            # Выводим содержимое сайта на экран
+            content = response.text
+            print(f"Содержимое сайта:\n{content}")
+        else:
+            # Выводим сообщение об ошибке
+            print(f"Запрос не был успешным. Возможная причина: {response.reason}")
+
+        # Создаем новый список с нужными полями
+        stock_prices = {
+            "stock": stock,
+            "price": price
+        }
+
+        result.append(stock_prices)
+
+    return result
+
+# def get_exchange_rate(transaction_amount: str = "1000.0", currency: str = "RUB") -> float:
+#     """
+#     Функция для получения обменного курса и конвертации суммы
+#     :param transaction_amount: сумма для конвертации (по умолчанию 1000.0)
+#     :param currency: валюта (по умолчанию 'RUB')
+#     :return: конвертированная сумма в рублях
+#     """
+#     if currency != "RUB":
+#         url = f"https://api.apilayer.com/exchangerates_data/convert?to=RUB&from={currency}&amount={transaction_amount}"
+#         headers = {"apikey": API_KEY}
+#
+#         # Выполняем GET-запрос к сайту и сохраняем ответ в переменную response
+#         response = requests.get(url, headers=headers)
+#
+#         data = response.json()  # Преобразуем ответ в словарь
+#
+#         if "result" in data:
+#             # Извлекаем из API-запроса сумму транзакции в рублях
+#             amount = data["result"]
+#         else:
+#             print("==============Предупреждение: операция без result")
+#
+#         # Получаем статус-код из ответа и выводим его на экран
+#         status_code = response.status_code
+#         print(f"Статус код: {status_code}")
+#
+#         # Проверяем, равен ли статус-код 200, то есть чтобы запрос был успешным
+#         if status_code == 200:
+#             # Выводим содержимое сайта на экран
+#             content = response.text
+#             print(f"Содержимое сайта:\n{content}")
+#         else:
+#             # Выводим сообщение об ошибке
+#             print(f"Запрос не был успешным. Возможная причина: {response.reason}")
+#     else:
+#         amount = transaction_amount
+#     return float(amount)
+
+
+
+
+
 
 
 
     # Создаем словарь для хранения результатов по топ-транзакциям
-    result = {}
+    # result = {}
 
 
 
