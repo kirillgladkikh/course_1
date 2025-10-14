@@ -80,6 +80,7 @@ def get_transactions_filtered(transactions_full: List[Dict], target_datetime: Un
 
     # Получаем первый день месяца для указанной даты
     first_day_of_month = target_datetime.replace(day=1, hour=0, minute=0, second=0)
+    input_day_of_month = target_datetime.replace(hour=0, minute=0, second=0)
 
     filtered_transactions = []
 
@@ -93,10 +94,10 @@ def get_transactions_filtered(transactions_full: List[Dict], target_datetime: Un
             if not isinstance(date_obj, Timestamp):
                 raise ValueError("transaction_date не является Timestamp")
 
-            # print(f"\nfirst_day_of_month {first_day_of_month} <= date_obj {date_obj} <= target_datetime {target_datetime}")
+            # print(f"\nfirst_day_of_month {first_day_of_month} <= date_obj {date_obj} <= input_day_of_month {input_day_of_month}")
 
             # Проверяем, попадает ли дата транзакции в нужный диапазон
-            if first_day_of_month <= date_obj <= target_datetime:
+            if first_day_of_month <= date_obj <= input_day_of_month:
 
                 # print(f"transaction in transactions_full {transaction}")
 
@@ -146,9 +147,11 @@ def get_cards_data(transactions_filtered: List[Dict]) -> List[Dict]:
     # Проходим по всем транзакциям
     for transaction in transactions_filtered:
 
-        # Игнорируем строки без данных карт
+        # Игнорируем:
+        # - строки без данных карт
+        # - строки со статусом FAILED
         # print(f'transaction["card_number"]: {transaction["card_number"]} {type(transaction["card_number"])}')
-        if transaction["card_number"] != "":
+        if transaction["card_number"] != "" and transaction["transaction_status"] != "FAILED":
 
             # Извлекаем последние 4 цифры карты
             # print(f'transaction["card_number"]: {transaction["card_number"]} {type(transaction["card_number"])}')

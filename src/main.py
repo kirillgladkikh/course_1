@@ -45,7 +45,8 @@ transactions_full = read_transactions_from_excel("data/operations.xlsx")
 print(f"transactions_full {len(transactions_full)} {type(transactions_full)}")
 
 # Получаем список транзакций для заданного диапазона дат
-transactions_filtered= get_transactions_filtered(transactions_full, Timestamp('2021-12-31 16:44:00'))
+transactions_filtered= get_transactions_filtered(transactions_full, Timestamp('2021-12-31 16:44:00'))  # 24.08.2021 03:39:33 - проверка FAILED; 2021-12-31 16:44:00 - база
+
 # for transaction in transactions_filtered:
 #     print(transaction)
 
