@@ -1,4 +1,5 @@
 import math
+import heapq
 from datetime import datetime, timedelta
 from typing import List, Dict, Union
 from pandas import Timestamp
@@ -110,7 +111,7 @@ def get_transactions_filtered(transactions_full: List[Dict], target_datetime: Un
     return filtered_transactions
 
 
-def get_cards_data(transactions_filtered: list) -> list:
+def get_cards_data(transactions_filtered: List[Dict]) -> List[Dict]:
     """
     Анализирует список транзакций и агрегирует данные по банковским картам.
 
@@ -202,42 +203,111 @@ def get_cards_data(transactions_filtered: list) -> list:
     return list(result.values())
 
 
-def get_top_transactions(transactions_filtered: list) -> list:
+def get_top_transactions(transactions_filtered: List[Dict]) -> List[Dict]:
+    """
+    Возвращает список из 5 транзакций с наибольшими значениями payment_amount
+    с использованием heapq.nlargest
+    """
+    # Используем heapq.nlargest для получения топ-5 элементов
+    transactions_top = heapq.nlargest(
+        5,
+        transactions_filtered,
+        key=lambda x: x['payment_amount']
+    )
+
+    return transactions_top
 
 
-  "top_transactions": [
-    {
-      "date": "21.12.2021",
-      "amount": 1198.23,
-      "category": "Переводы",
-      "description": "Перевод Кредитная карта. ТП 10.2 RUR"
-    },
-    {
-      "date": "20.12.2021",
-      "amount": 829.00,
-      "category": "Супермаркеты",
-      "description": "Лента"
-    },
-    {
-      "date": "20.12.2021",
-      "amount": 421.00,
-      "category": "Различные товары",
-      "description": "Ozon.ru"
-    },
-    {
-      "date": "16.12.2021",
-      "amount": -14216.42,
-      "category": "ЖКХ",
-      "description": "ЖКУ Квартира"
-    },
-    {
-      "date": "16.12.2021",
-      "amount": 453.00,
-      "category": "Бонусы",
-      "description": "Кешбэк за обычные покупки"
-    }
-  ],
+def top_transactions_to_json(top_transactions: List[Dict]) -> List[Dict]:
+    """
+    Преобразует список транзакций в сокращенный формат с основными полями
 
+    Args:
+        transactions: список транзакций в исходной структуре
+
+    Returns:
+        список сокращенных транзакций с основными полями
+    """
+    result = []
+
+    for transaction in top_transactions:
+        # Создаем новый словарь с нужными полями
+        top_transaction = {
+            "date": transaction["transaction_date"],  #.strftime('%Y-%m-%d') if transaction["transaction_date"] else "",
+            "amount": transaction["transaction_amount"],
+            "category": transaction["transaction_category"],
+            "description": transaction["transaction_description"]
+        }
+
+        result.append(top_transaction)
+
+    return result
+
+
+
+
+
+def get_top_transactions_test() -> List[Dict]:
+    # Пример данных с Decimal
+    transactions_sample = [
+        {'id': 1, 'payment_amount': Decimal('100.50')},
+        {'id': 2, 'payment_amount': Decimal('200.75')},
+        {'id': 3, 'payment_amount': Decimal('150.25')},
+        {'id': 4, 'payment_amount': Decimal('300.00')},
+        {'id': 5, 'payment_amount': Decimal('250.99')}
+    ]
+
+    # Использование heapq.nlargest с Decimal
+    top_transactions = heapq.nlargest(
+        5,
+        transactions_sample,
+        key=lambda x: x['payment_amount']
+    )
+
+    return top_transactions
+
+
+
+
+
+    # Создаем словарь для хранения результатов по топ-транзакциям
+    result = {}
+
+
+
+  # "top_transactions": [
+  #   {
+  #     "date": "21.12.2021",
+  #     "amount": 1198.23,
+  #     "category": "Переводы",
+  #     "description": "Перевод Кредитная карта. ТП 10.2 RUR"
+  #   },
+  #   {
+  #     "date": "20.12.2021",
+  #     "amount": 829.00,
+  #     "category": "Супермаркеты",
+  #     "description": "Лента"
+  #   },
+  #   {
+  #     "date": "20.12.2021",
+  #     "amount": 421.00,
+  #     "category": "Различные товары",
+  #     "description": "Ozon.ru"
+  #   },
+  #   {
+  #     "date": "16.12.2021",
+  #     "amount": -14216.42,
+  #     "category": "ЖКХ",
+  #     "description": "ЖКУ Квартира"
+  #   },
+  #   {
+  #     "date": "16.12.2021",
+  #     "amount": 453.00,
+  #     "category": "Бонусы",
+  #     "description": "Кешбэк за обычные покупки"
+  #   }
+  # ],
+  #
 
 
 

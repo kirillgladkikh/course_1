@@ -3,7 +3,8 @@ import json
 from datetime import datetime
 from pandas import Timestamp
 from decimal import Decimal
-from src.views import get_transactions_filtered, get_greeting, get_cards_data
+from src.views import get_transactions_filtered, get_greeting, get_cards_data, get_top_transactions, \
+    get_top_transactions_test, top_transactions_to_json
 # from src.services import
 # from src.reports import
 from src.utils import read_transactions_from_excel, convert_date_format
@@ -46,7 +47,7 @@ print(f"transactions_full {len(transactions_full)} {type(transactions_full)}")
 # Получаем список транзакций для заданного диапазона дат
 transactions_filtered= get_transactions_filtered(transactions_full, Timestamp('2021-12-31 16:44:00'))
 # for transaction in transactions_filtered:
-#     print(transactions_filtered)
+#     print(transaction)
 
 # print(f"transactions_full {len(transactions_full)} {type(transactions_full)}")
 # print(f"transactions_filtered {len(transactions_filtered)} {type(transactions_filtered)}")
@@ -81,9 +82,24 @@ for card in cards_list:
 print(json_answer_common_page)
 
 # Формируем ТОП-список транзакций - по условиям
+# top_transactions_list = get_top_transactions_test()
+# for transaction in top_transactions_list:
+#     print(transaction)
+
+top_transactions_list = get_top_transactions(transactions_filtered)
+for transaction in top_transactions_list:
+    print(transaction)
 
 # Записываем ТОП-список транзакций в итоговый список
+top_transactions_list_for_json = top_transactions_to_json(top_transactions_list)
 
+# Очищаем существующий массив
+json_answer_common_page["top_transactions"].clear()
+
+# Добавляем каждый элемент
+for item in top_transactions_list_for_json:
+    json_answer_common_page["top_transactions"].append(item)
+print(json_answer_common_page)
 
 # # Формируем список курсов валют
 #
