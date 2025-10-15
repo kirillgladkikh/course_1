@@ -7,6 +7,7 @@ from typing import List, Dict, Union
 from pandas import Timestamp
 from decimal import Decimal
 from dotenv import load_dotenv
+from pathlib import Path
 
 
 # Основные функции для генерации JSON-ответа
@@ -238,16 +239,32 @@ def get_top_transactions_test() -> List[Dict]:
 
     # курсы валют (валюты берем из файла user_settings.json)
 
-load_dotenv(".env")
+# Получаем текущую рабочую директорию
+current_dir = Path().resolve()
+print(f"\nТекущая директория: {current_dir}")
 
-API_KEY = os.getenv("API_KEY_EXCHANGE_RATES")
+# load_dotenv(".env")
+# Загружаем .env
+load_dotenv()
+print(f"load_dotenv() = {load_dotenv()}")
+
+# Проверяем существование файла
+dotenv_path = Path('.env')
+print(f"dotenv_path = {dotenv_path}")
+if not dotenv_path.is_file():
+    print(f"Файл .env не найден в директории: {current_dir}")
+
+API_KEY = os.getenv("API_KEY_EXCHANGE_RATES")  # "q1xBP6wP6VEfymRmntgsFxdABB35xlKm"  # os.getenv("API_KEY_EXCHANGE_RATES")
+print(f"===API_KEY = {API_KEY}")
+if not API_KEY:
+    raise ValueError("API ключ не найден!")
+
+
 
 def get_currency_rates(user_currencies: list) -> list:
     """ """
-
     # Создаем список для хранения результатов по валютам
     result = []
-
     rate = "1.0"
 
     for item in user_currencies:
@@ -256,15 +273,18 @@ def get_currency_rates(user_currencies: list) -> list:
         # ссылка на сервис: https://marketplace.apilayer.com/exchangerates_data-api?utm_source=apilayermarketplace&utm_medium=featured
         url = f"https://api.apilayer.com/exchangerates_data/convert?to=RUB&from={currency}&amount={rate}"
         headers = {"apikey": API_KEY}
+        print(f"url = {url}")
 
         # Выполняем GET-запрос к сайту и сохраняем ответ в переменную response
         response = requests.get(url, headers=headers)
 
         data = response.json()  # Преобразуем ответ в словарь
+        print(f"data = response.json() = {data}")
 
         if "result" in data:
             # Извлекаем из API-запроса сумму транзакции в рублях
             amount = data["result"]
+            print(f"amount = {amount}")
         else:
             print("==============Предупреждение: операция без result")
 
@@ -284,12 +304,14 @@ def get_currency_rates(user_currencies: list) -> list:
         # Создаем новый список с нужными полями
         currency_rates = {
             "currency": currency,
-            "rate": amount
+            "rate": f"{Decimal(amount):.2f}"
         }
 
         result.append(currency_rates)
+        print(result)
 
     return result
+
 
 # стоимость акций (акции берем из файла user_settings.json)
 def get_stock_prices(user_stocks: list) -> list:
