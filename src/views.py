@@ -13,7 +13,7 @@ from pathlib import Path
 
 # Основные функции для генерации JSON-ответа
 
-def get_greeting(date: datetime) -> str:
+def get_greeting(date: Union[Timestamp, str]) -> str:
     """
     Определение приветствия по времени суток
     Принимает объект datetime в формате 'YYYY-MM-DD HH:MM:SS'
@@ -206,7 +206,7 @@ def get_top_transactions(transactions_filtered: List[Dict]) -> List[Dict]:
     return transactions_top
 
 
-def timestamp_to_str(timestamp_date) -> str:
+def timestamp_to_str(timestamp_date: Union[Timestamp, str]) -> str:
     """ """
     # Преобразуем Timestamp в datetime объект
     datetime_obj = datetime.fromtimestamp(timestamp_date.timestamp())
@@ -449,7 +449,6 @@ def get_stock_prices(user_stocks: list) -> dict:
         result.append(stock_prices)
 
     return result
-
 
 
 def views_main_eventspage():

@@ -143,31 +143,15 @@ for item in stock_prices_list:
 print(json_answer_common_page)
 
 
-# Полный JSON-ответ - ГОТОВ
+# ФОРМИРУЕМ JSON-ОТВЕТ
+# Преобразуем в JSON строку с форматированием
+json_string = json.dumps(
+    json_answer_common_page,
+    ensure_ascii=False,
+    indent=4
+)
+print(f"json_string = {json_string}")
+# Сохраняем в файл
+with open('common_page_json_answer.json', 'w', encoding='utf-8') as file:
+    file.write(json_string)
 
-
-
-
-#
-#
-# # # Преобразуем в JSON строку
-# # json_data = json.dumps(transactions, ensure_ascii=False, indent=4)
-# #
-# # # Сохраняем в файл
-# # with open('transactions.json', 'w', encoding='utf-8') as file:
-# #     file.write(json_data)
-#
-#
-#
-#
-# def services_main():
-#     pass
-#
-#
-# def reports_main():
-#     pass
-#
-#
-# # ==============================================================================================================
-# def course_1_main():
-#     pass

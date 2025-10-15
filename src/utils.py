@@ -174,8 +174,6 @@ def read_user_settings_json(user_settings_json: str) -> dict:
         return []
 
 
-
-
 # Утилиты для модуля views.py
 
 
@@ -200,32 +198,6 @@ def convert_date_format(date_str: str = "31.12.2021 16:44:00") -> str:
     except ValueError:
         return "Ошибка: некорректный формат даты"
 
-
-# def convert_timestamp_to_date(timestamp: Timestamp) -> str:
-#     """
-#     Преобразует объект Timestamp из pandas в формат DD.MM.YYYY HH:MM:SS
-#
-#     Параметры:
-#     timestamp (Timestamp): входная временная метка pandas
-#
-#     Возвращает:
-#     str: строка с датой в формате DD.MM.YYYY HH:MM:SS
-#     """
-#     print(f"\n\n\ntimestamp = {timestamp} type {type(timestamp)}")
-#     try:
-#         # Проверяем тип входного параметра
-#         if not isinstance(timestamp, Timestamp):
-#             raise TypeError("Входной параметр должен быть типа Timestamp")
-#
-#         # Определяем целевой формат
-#         output_format = "%d.%m.%Y %H:%M:%S"
-#
-#         # Форматируем объект Timestamp в нужную строку
-#         return timestamp.strftime(output_format)
-#
-#     except (TypeError, OverflowError, OSError) as e:
-#         print(f"Ошибка при конвертации timestamp: {e}")
-#         return None
 
 
 
