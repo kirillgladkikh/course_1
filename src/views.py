@@ -13,7 +13,7 @@ from pathlib import Path
 
 # Основные функции для генерации JSON-ответа
 
-def get_greeting(date: Union[Timestamp, str]) -> str:
+def get_greeting(date: datetime) -> str:
     """
     Определение приветствия по времени суток
     Принимает объект datetime в формате 'YYYY-MM-DD HH:MM:SS'
