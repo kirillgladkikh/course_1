@@ -1,10 +1,11 @@
 import os
 import json
 import pandas as pd
+import time
 import math
 from decimal import Decimal
 from typing import Dict, List
-from datetime import datetime
+from datetime import datetime  #, Timestamp
 
 
 def safe_convert(value: str) -> Decimal:
@@ -200,27 +201,31 @@ def convert_date_format(date_str: str = "31.12.2021 16:44:00") -> str:
         return "Ошибка: некорректный формат даты"
 
 
-def get_currency_rate():
-    pass
-
-
-def get_stock_price():
-    pass
-
-
-
-
-
-# ====================================================================================================================
-# def parse_datetime(date_str):
-#     """Парсинг входной даты в формате YYYY-MM-DD HH:MM:SS"""
-#     return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
-
-
-# def calculate_period(date):
-#     """Определение временного периода (начало месяца — текущая дата)"""
-#     start_of_month = date.replace(day=1)
-#     return (date - start_of_month).days
+# def convert_timestamp_to_date(timestamp: Timestamp) -> str:
+#     """
+#     Преобразует объект Timestamp из pandas в формат DD.MM.YYYY HH:MM:SS
+#
+#     Параметры:
+#     timestamp (Timestamp): входная временная метка pandas
+#
+#     Возвращает:
+#     str: строка с датой в формате DD.MM.YYYY HH:MM:SS
+#     """
+#     print(f"\n\n\ntimestamp = {timestamp} type {type(timestamp)}")
+#     try:
+#         # Проверяем тип входного параметра
+#         if not isinstance(timestamp, Timestamp):
+#             raise TypeError("Входной параметр должен быть типа Timestamp")
+#
+#         # Определяем целевой формат
+#         output_format = "%d.%m.%Y %H:%M:%S"
+#
+#         # Форматируем объект Timestamp в нужную строку
+#         return timestamp.strftime(output_format)
+#
+#     except (TypeError, OverflowError, OSError) as e:
+#         print(f"Ошибка при конвертации timestamp: {e}")
+#         return None
 
 
 

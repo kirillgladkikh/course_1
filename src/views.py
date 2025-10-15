@@ -8,6 +8,7 @@ from pandas import Timestamp
 from decimal import Decimal
 from dotenv import load_dotenv
 from pathlib import Path
+# from utils import convert_timestamp_to_date
 
 
 # Основные функции для генерации JSON-ответа
@@ -34,7 +35,6 @@ def get_greeting(date: datetime) -> str:
         return "Ошибка: передан неверный тип данных. Ожидается объект datetime"
 
 
-# ===================================================================================================================
 def get_transactions_filtered(transactions_full: List[Dict], target_datetime: Union[Timestamp, str] = Timestamp('2021-12-31 16:44:00'))-> List[Dict]:
     """
     Фильтрует транзакции по дате: от начала месяца до указанной даты.
@@ -165,6 +165,32 @@ def get_cards_data(transactions_filtered: List[Dict]) -> List[Dict]:
     return list(result.values())
 
 
+def cards_data_to_json(cards_data: List[Dict]) -> List[Dict]:
+    """
+    Преобразует список транзакций в сокращенный формат с основными полями
+
+    Args:
+        ----------------transactions: список транзакций в исходной структуре
+
+    Returns:
+        ----------------список сокращенных транзакций с основными полями
+    """
+    # Создаем новый список для транзакций
+    result = []
+
+    for card in cards_data:
+        # Создаем новый список с нужными полями
+        card_data = {
+            "last_digits": card["last_digits"],
+            "total_spent": round(float(card["total_spent"]), 2),
+            "cashback": round(float(card["cashback"]), 2)
+        }
+
+        result.append(card_data)
+
+    return result
+
+
 def get_top_transactions(transactions_filtered: List[Dict]) -> List[Dict]:
     """
     Возвращает список из 5 транзакций с наибольшими значениями payment_amount
@@ -178,6 +204,14 @@ def get_top_transactions(transactions_filtered: List[Dict]) -> List[Dict]:
     )
 
     return transactions_top
+
+
+def timestamp_to_str(timestamp_date) -> str:
+    """ """
+    # Преобразуем Timestamp в datetime объект
+    datetime_obj = datetime.fromtimestamp(timestamp_date.timestamp())
+    formatted_date = datetime_obj.strftime('%d.%m.%Y')
+    return formatted_date
 
 
 def top_transactions_to_json(top_transactions: List[Dict]) -> List[Dict]:
@@ -196,8 +230,9 @@ def top_transactions_to_json(top_transactions: List[Dict]) -> List[Dict]:
     for transaction in top_transactions:
         # Создаем новый список с нужными полями
         top_transaction = {
-            "date": transaction["transaction_date"],  #.strftime('%Y-%m-%d') if transaction["transaction_date"] else "",
-            "amount": transaction["transaction_amount"],
+            # "date": transaction["transaction_date"],  # convert_timestamp_to_date(transaction["transaction_date"]),  #.strftime('%Y-%m-%d') if transaction["transaction_date"] else "",
+            "date": timestamp_to_str(transaction["transaction_date"]),
+            "amount": round(float(transaction["transaction_amount"]), 2),
             "category": transaction["transaction_category"],
             "description": transaction["transaction_description"]
         }
@@ -205,9 +240,6 @@ def top_transactions_to_json(top_transactions: List[Dict]) -> List[Dict]:
         result.append(top_transaction)
 
     return result
-
-
-
 
 
 def get_top_transactions_test() -> List[Dict]:
