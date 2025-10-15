@@ -15,8 +15,38 @@ from pathlib import Path
 
 def get_greeting(date: datetime) -> str:
     """
-    Определение приветствия по времени суток
-    Принимает объект datetime в формате 'YYYY-MM-DD HH:MM:SS'
+    Возвращает приветствие в зависимости от времени суток.
+
+    Функция анализирует переданное время и возвращает соответствующее приветствие:
+    "Доброе утро", "Добрый день", "Добрый вечер" или "Доброй ночи".
+
+    Параметры:
+    date (datetime): объект datetime, содержащий информацию о времени
+
+    Возвращаемое значение:
+    str: приветствие, соответствующее времени суток
+
+    Логика определения приветствия:
+    - 05:00 - 11:59: "Доброе утро"
+    - 12:00 - 17:59: "Добрый день"
+    - 18:00 - 22:59: "Добрый вечер"
+    - 23:00 - 04:59: "Доброй ночи"
+
+    Обработка ошибок:
+    Если передан объект неверного типа (не datetime), возвращается сообщение об ошибке.
+
+    Примеры использования:
+    >>> get_greeting(datetime(2025, 10, 15, 9, 0))
+    'Доброе утро'
+
+    >>> get_greeting(datetime(2025, 10, 15, 14, 30))
+    'Добрый день'
+
+    >>> get_greeting(datetime(2025, 10, 15, 19, 45))
+    'Добрый вечер'
+
+    >>> get_greeting(datetime(2025, 10, 15, 2, 15))
+    'Доброй ночи'
     """
     try:
         # Получаем час из объекта datetime
@@ -37,16 +67,45 @@ def get_greeting(date: datetime) -> str:
 
 def get_transactions_filtered(transactions_full: List[Dict], target_datetime: Union[Timestamp, str] = Timestamp('2021-12-31 16:44:00'))-> List[Dict]:
     """
-    Фильтрует транзакции по дате: от начала месяца до указанной даты.
+    Фильтрует список транзакций по заданному временному диапазону.
+
+    Функция принимает полный список транзакций и целевую дату, затем возвращает
+    отфильтрованный список транзакций, которые произошли в указанном месяце до
+    указанной даты включительно.
 
     Параметры:
-    transactions_full (List[Dict]): список всех транзакций
-    target_datetime (Union[Timestamp, str]): объект Timestamp или строка с датой в формате "YYYY-MM-DD HH:MM:SS"
+    transactions_full (List[Dict]): Полный список транзакций, где каждая транзакция
+        представляет собой словарь с полями, включая "transaction_date".
+    target_datetime (Union[Timestamp, str]): Целевая дата для фильтрации. Может быть
+        передана как объект Timestamp или строка в формате 'YYYY-MM-DD HH:MM:SS'.
+        По умолчанию используется дата '2021-12-31 16:44:00'.
 
     Возвращает:
-    List[Dict]: отфильтрованный список транзакций
-    """
+    List[Dict]: Отфильтрованный список транзакций, содержащих только те транзакции,
+        которые произошли в том же месяце, что и target_datetime, и не позже этой даты.
 
+    Процесс фильтрации:
+    1. Преобразует target_datetime в объект Timestamp, если переданная дата является строкой
+    2. Определяет первый день месяца для target_datetime
+    3. Фильтрует транзакции, оставляя только те, чья дата находится между первым днем месяца
+        и target_datetime (включительно)
+
+    Обработка ошибок:
+    - Если transaction_date не является объектом Timestamp, транзакция пропускается
+    - При возникновении ошибок KeyError или ValueError выводится сообщение об ошибке
+
+    Пример использования:
+    >>> transactions = [
+    ...     {'transaction_date': Timestamp('2021-12-15 10:00:00'), 'amount': 100},
+    ...     {'transaction_date': Timestamp('2021-12-30 15:00:00'), 'amount': 200},
+    ...     {'transaction_date': Timestamp('2022-01-05 12:00:00'), 'amount': 300}
+    ... ]
+    >>> get_transactions_filtered(transactions, Timestamp('2021-12-31'))
+    [
+        {'transaction_date': Timestamp('2021-12-15 10:00:00'), 'amount': 100},
+        {'transaction_date': Timestamp('2021-12-30 15:00:00'), 'amount': 200}
+    ]
+    """
     # Если target_datetime - строка, преобразуем её в Timestamp
     if isinstance(target_datetime, str):
         target_datetime = Timestamp(target_datetime)
@@ -87,32 +146,47 @@ def get_transactions_filtered(transactions_full: List[Dict], target_datetime: Un
 
 def get_cards_data(transactions_filtered: List[Dict]) -> List[Dict]:
     """
-    Анализирует список транзакций и агрегирует данные по банковским картам.
+    Анализирует список транзакций и формирует агрегированные данные по банковским картам.
 
-    Функция обрабатывает список транзакций, группируя их по последним 4 цифрам
-    номера карты. Для каждой карты подсчитывается общая сумма потраченных средств
-    и накопленный кешбэк.
+    Функция обрабатывает отфильтрованные транзакции, группирует их по последним 4 цифрам карты
+    и подсчитывает общую сумму потраченных средств и накопленный кешбэк для каждой карты.
 
     Параметры:
-    transactions_filtered (list): список словарей с данными транзакций, где каждый
-        словарь содержит следующие ключи:
-        - card_number (str/int): номер карты (может быть строкой или числом)
-        - transaction_amount (str/float): сумма транзакции (число или строка с числом)
-        - cashback_amount (str/float): сумма кешбэка (число или строка с числом)
+    transactions_filtered (List[Dict]): Список словарей с данными транзакций.
+    Каждый словарь должен содержать следующие поля:
+    - card_number (str): номер карты
+    - transaction_status (str): статус транзакции
+    - transaction_amount (float): сумма транзакции
+    - cashback_amount (float): сумма кешбэка
 
-    Возвращаемое значение:
-    list: список словарей с агрегированными данными по картам, где каждый словарь
-        содержит:
-        - last_digits (str): последние 4 цифры номера карты
-        - total_spent (Decimal): общая сумма потраченных средств
-        - cashback (Decimal): накопленный кешбэк
+    Возвращает:
+    List[Dict]: Список словарей с агрегированными данными по картам, где:
+    - last_digits (str): последние 4 цифры карты
+    - total_spent (Decimal): общая сумма потраченных средств
+    - cashback (Decimal): накопленный кешбэк
 
-    Особенности обработки:
-    1. Номера карт обрабатываются как строки для корректной работы с ведущими нулями
-    2. Транзакции без номера карты игнорируются
-    3. При ошибках преобразования числовых значений транзакция пропускается
-    4. Суммы хранятся в типе Decimal для точности вычислений
-    5. Результат сортируется по убыванию общей суммы потраченных средств
+    Исключения:
+    - Транзакции со статусом FAILED игнорируются
+    - Транзакции без номера карты игнорируются
+    - При ошибке преобразования числовых значений выводится предупреждение
+
+    Пример структуры входной транзакции:
+    {
+        "card_number": "4111111111111111",
+        "transaction_status": "SUCCESS",
+        "transaction_amount": 1000.50,
+        "cashback_amount": 50.25
+    }
+
+    Пример результата:
+    [
+        {
+            "last_digits": "1111",
+            "total_spent": 1500.75,
+            "cashback": 75.38
+        },
+        ...
+    ]
     """
     # Создаем словарь для хранения результатов по картам
     result = {}
@@ -167,13 +241,43 @@ def get_cards_data(transactions_filtered: List[Dict]) -> List[Dict]:
 
 def cards_data_to_json(cards_data: List[Dict]) -> List[Dict]:
     """
-    Преобразует список транзакций в сокращенный формат с основными полями
+    Преобразует данные банковских карт в стандартизированный JSON-формат.
 
-    Args:
-        ----------------transactions: список транзакций в исходной структуре
+    Функция принимает список словарей с данными о банковских картах и возвращает
+    новый список, содержащий только необходимые поля в корректном формате.
 
-    Returns:
-        ----------------список сокращенных транзакций с основными полями
+    Параметры:
+    cards_data (List[Dict]): Исходный список словарей с данными о картах.
+        Каждый словарь должен содержать следующие поля:
+        - last_digits (str): последние цифры номера карты
+        - total_spent (str или float): общая сумма потраченных средств
+        - cashback (str или float): накопленный кешбэк
+
+    Возвращает:
+    List[Dict]: Список словарей с преобразованными данными карт, где:
+        - last_digits: последние цифры карты (str)
+        - total_spent: общая сумма расходов (float, округленная до 2 знаков)
+        - cashback: накопленный кешбэк (float, округленный до 2 знаков)
+
+    Пример входного данных:
+    [
+        {
+            "last_digits": "1234",
+            "total_spent": "1000.50",
+            "cashback": "50.25"
+        },
+        ...
+    ]
+
+    Пример выходного данных:
+    [
+        {
+            "last_digits": "1234",
+            "total_spent": 1000.50,
+            "cashback": 50.25
+        },
+        ...
+    ]
     """
     # Создаем новый список для транзакций
     result = []
@@ -193,8 +297,44 @@ def cards_data_to_json(cards_data: List[Dict]) -> List[Dict]:
 
 def get_top_transactions(transactions_filtered: List[Dict]) -> List[Dict]:
     """
-    Возвращает список из 5 транзакций с наибольшими значениями payment_amount
-    с использованием heapq.nlargest
+    Возвращает список топ-5 транзакций с наибольшими суммами платежей.
+
+    Функция принимает отфильтрованный список транзакций и возвращает
+    топ-5 транзакций, отсортированных по убыванию суммы платежа.
+
+    Параметры:
+    transactions_filtered (List[Dict]): Список словарей, где каждый словарь
+    представляет собой транзакцию с различными полями, включая сумму платежа.
+
+    Возвращает:
+    List[Dict]: Список из 5 словарей с транзакциями, отсортированных по
+    убыванию суммы платежа (payment_amount).
+
+    Пример структуры входного словаря:
+    {
+        'transaction_id': '12345',
+        'payment_amount': 1000.00,
+        'date': '2025-10-15',
+        'description': 'Покупка в магазине'
+    }
+
+    Пример использования:
+    >>> transactions = [
+    ...     {'payment_amount': 1000},
+    ...     {'payment_amount': 5000},
+    ...     {'payment_amount': 2000},
+    ...     {'payment_amount': 3000},
+    ...     {'payment_amount': 4000},
+    ...     {'payment_amount': 1500}
+    ... ]
+    >>> get_top_transactions(transactions)
+    [
+        {'payment_amount': 5000},
+        {'payment_amount': 4000},
+        {'payment_amount': 3000},
+        {'payment_amount': 2000},
+        {'payment_amount': 1500}
+    ]
     """
     # Используем heapq.nlargest для получения топ-5 элементов
     transactions_top = heapq.nlargest(
@@ -207,7 +347,25 @@ def get_top_transactions(transactions_filtered: List[Dict]) -> List[Dict]:
 
 
 def timestamp_to_str(timestamp_date: Union[Timestamp, str]) -> str:
-    """ """
+    """
+    Преобразует временную метку (timestamp) в строку в формате даты.
+
+    Функция принимает на вход объект Timestamp или строку, представляющую timestamp,
+    и возвращает отформатированную строку с датой в формате 'ДД.ММ.ГГГГ'.
+
+    Параметры:
+    timestamp_date (Union[Timestamp, str]): Временная метка для преобразования.
+        Может быть объектом Timestamp или строкой, содержащей значение timestamp.
+
+    Возвращает:
+    str: Строковое представление даты в формате 'ДД.ММ.ГГГГ'.
+
+    Пример использования:
+    >>> timestamp_to_str(1609459200)
+    '01.01.2021'
+    >>> timestamp_to_str(Timestamp('2021-01-01'))
+    '01.01.2021'
+    """
     # Преобразуем Timestamp в datetime объект
     datetime_obj = datetime.fromtimestamp(timestamp_date.timestamp())
     formatted_date = datetime_obj.strftime('%d.%m.%Y')
@@ -216,13 +374,44 @@ def timestamp_to_str(timestamp_date: Union[Timestamp, str]) -> str:
 
 def top_transactions_to_json(top_transactions: List[Dict]) -> List[Dict]:
     """
-    Преобразует список транзакций в сокращенный формат с основными полями
+    Преобразует список транзакций в JSON-совместимый формат, выбирая и форматируя
+    ключевые поля каждой транзакции.
 
-    Args:
-        transactions: список транзакций в исходной структуре
+    Параметры:
+    top_transactions (List[Dict]): Список словарей с информацией о транзакциях.
+        Каждый словарь должен содержать следующие ключи:
+        - transaction_date (int/float): timestamp даты транзакции
+        - transaction_amount (str/float): сумма транзакции
+        - transaction_category (str): категория транзакции
+        - transaction_description (str): описание транзакции
 
-    Returns:
-        список сокращенных транзакций с основными полями
+    Возвращает:
+    List[Dict]: Новый список словарей с отформатированными данными транзакций,
+        где каждый словарь содержит следующие поля:
+        - date (str): отформатированная дата транзакции в формате 'YYYY-MM-DD'
+        - amount (float): сумма транзакции, округленная до 2 знаков после запятой
+        - category (str): категория транзакции
+        - description (str): описание транзакции
+
+    Пример входного параметра:
+    [
+        {
+            "transaction_date": 1633072800,
+            "transaction_amount": "1234.567",
+            "transaction_category": "Продукты",
+            "transaction_description": "Покупка в супермаркете"
+        }
+    ]
+
+    Пример возвращаемого значения:
+    [
+        {
+            "date": "2021-10-01",
+            "amount": 1234.57,
+            "category": "Продукты",
+            "description": "Покупка в супермаркете"
+        }
+    ]
     """
     # Создаем новый список для транзакций
     result = []
@@ -263,14 +452,13 @@ def get_top_transactions_test() -> List[Dict]:
 
 
 # API
-    # ссылка на маркетплейс API-сервисов: https://marketplace.apilayer.com/
+# ссылка на маркетплейс API-сервисов: https://marketplace.apilayer.com/
 
-    # На дату запроса забираем:
-    # курсы валют (валюты берем из файла user_settings.json)
-    # стоимость акций (акции берем из файла user_settings.json)
+# На дату запроса забираем:
+# курсы валют (валюты берем из файла user_settings.json)
+# стоимость акций (акции берем из файла user_settings.json)
 
-    # курсы валют (валюты берем из файла user_settings.json)
-
+# Курсы валют (валюты берем из файла user_settings.json)
 # Получаем текущую рабочую директорию
 current_dir = Path().resolve()
 print(f"\nТекущая директория: {current_dir}")
@@ -293,7 +481,38 @@ if not API_KEY_EXCHANGE_RATES:
 
 
 def get_currency_rates(user_currencies: list) -> list:
-    """ """
+    """
+    Получает актуальные курсы валют по отношению к российскому рублю (RUB)
+    для указанных валют через внешний API.
+
+    Параметры:
+    user_currencies (list): Список валютных кодов (например, ['USD', 'EUR', 'GBP'])
+
+    Возвращает:
+    list: Список словарей с информацией о курсах валют, где каждый словарь содержит:
+        - currency (str): Код валюты
+        - rate (float): Курс к RUB, округленный до 2 знаков после запятой
+
+    Процесс работы функции:
+    1. Для каждой валюты из входного списка выполняется запрос к API
+    2. Используется фиксированный коэффициент конвертации (1 единица валюты)
+    3. Результаты сохраняются в формате JSON
+    4. Проводится проверка успешности HTTP-запроса
+
+    Пример использования:
+    >>> get_currency_rates(['USD', 'EUR'])
+    [
+        {'currency': 'USD', 'rate': 92.50},
+        {'currency': 'EUR': 'rate': 101.75}
+    ]
+
+    Примечания:
+    - Используется API: https://marketplace.apilayer.com/exchangerates_data-api
+    - Конвертация производится из указанной валюты в RUB
+    - В случае ошибки при получении данных для конкретной валюты,
+      в результат будет записан статус с доступным значением
+    - Все курсы округляются до 2 знаков после запятой
+    """
     # Создаем список для хранения результатов по валютам
     result = []
     rate = "1.0"
@@ -353,61 +572,66 @@ if not API_KEY_STOCK_PRICES:
 
 
 def get_stock_prices(user_stocks: list) -> dict:
-    """ """
+    """
+    Получает актуальные цены акций для указанных биржевых инструментов
+    через API Financial Modeling Prep.
+
+    Параметры:
+    user_stocks (list): Список биржевых тикеров (например, ['AAPL', 'GOOGL', 'MSFT'])
+
+    Возвращает:
+    dict: Список словарей с информацией о ценах акций, где каждый словарь содержит:
+        - stock (str): Биржевой тикер
+        - price (float): Текущая цена акции, округленная до 2 знаков после запятой
+
+    Используемый API:
+    - Базовый эндпоинт: https://financialmodelingprep.com/stable/profile
+    - Формат запроса: /profile?symbol={stock}&apikey={API_KEY}
+
+    ДОКУМЕНТЫ:
+    https://site.financialmodelingprep.com/developer/docs
+    https://site.financialmodelingprep.com/developer/docs/pricing
+
+    ИСПОЛЬЗУЙ ЭТО:
+    https://site.financialmodelingprep.com/developer/docs/stable/peers
+    https://financialmodelingprep.com/stable/profile?symbol=AAPL&apikey=...
+
+    Пример ответа от API (сокращено):
+    [
+        {
+            "symbol": "AAPL",
+            "price": 232.8,
+            "companyName": "Apple Inc.",
+            "currency": "USD",
+            "exchange": "NASDAQ",
+            ...
+        }
+    ]
+
+    Процесс работы функции:
+    1. Для каждого тикера выполняется запрос к API
+    2. Извлекается актуальная цена акции
+    3. Проводится проверка успешности HTTP-запроса
+    4. Результаты сохраняются в структурированном формате
+
+    Пример использования:
+    >>> get_stock_prices(['AAPL', 'MSFT'])
+    [
+        {'stock': 'AAPL', 'price': 232.80},
+        {'stock': 'MSFT', 'price': 345.67}
+    ]
+
+    Примечания:
+    - Функция возвращает только цену и тикер акции
+    - Все цены округляются до 2 знаков после запятой
+    - В случае отсутствия цены для конкретного тикера, выводится предупреждение
+    - Проверяется статус-код ответа (ожидается 200)
+    """
     # Создаем список для хранения результатов по валютам
     result = []
 
     for item in user_stocks:
         stock = item
-
-        # ДОКУМЕНТЫ:
-        # https://site.financialmodelingprep.com/developer/docs
-        # https://site.financialmodelingprep.com/developer/docs/pricing
-
-        # ИСПОЛЬЗУЙ ЭТО:
-        # https://site.financialmodelingprep.com/developer/docs/stable/peers
-        # https://financialmodelingprep.com/stable/profile?symbol=AAPL&apikey=...
-        # RESPONSE:
-        # [
-        #     {
-        #         "symbol": "AAPL",
-        #         "price": 232.8,
-        #         "marketCap": 3500823120000,
-        #         "beta": 1.24,
-        #         "lastDividend": 0.99,
-        #         "range": "164.08-260.1",
-        #         "change": 4.79,
-        #         "changePercentage": 2.1008,
-        #         "volume": 0,
-        #         "averageVolume": 50542058,
-        #         "companyName": "Apple Inc.",
-        #         "currency": "USD",
-        #         "cik": "0000320193",
-        #         "isin": "US0378331005",
-        #         "cusip": "037833100",
-        #         "exchangeFullName": "NASDAQ Global Select",
-        #         "exchange": "NASDAQ",
-        #         "industry": "Consumer Electronics",
-        #         "website": "https://www.apple.com",
-        #         "description": "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide. The company offers iPhone, a line of smartphones; Mac, a line of personal computers; iPad, a line of multi-purpose tablets; and wearables, home, and accessories comprising AirPods, Apple TV, Apple Watch, Beats products, and HomePod. It also provides AppleCare support and cloud services; and operates various platforms, including the App Store that allow customers to discov...",
-        #         "ceo": "Mr. Timothy D. Cook",
-        #         "sector": "Technology",
-        #         "country": "US",
-        #         "fullTimeEmployees": "164000",
-        #         "phone": "(408) 996-1010",
-        #         "address": "One Apple Park Way",
-        #         "city": "Cupertino",
-        #         "state": "CA",
-        #         "zip": "95014",
-        #         "image": "https://images.financialmodelingprep.com/symbol/AAPL.png",
-        #         "ipoDate": "1980-12-12",
-        #         "defaultImage": false,
-        #         "isEtf": false,
-        #         "isActivelyTrading": true,
-        #         "isAdr": false,
-        #         "isFund": false
-        #     }
-        # ]
 
         url_with_apikey = f"https://financialmodelingprep.com/stable/profile?symbol={stock}&apikey={API_KEY_STOCK_PRICES}"
         print(f"url_w_apikey = {url_with_apikey}")
