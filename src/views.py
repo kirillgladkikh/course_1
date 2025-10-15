@@ -254,11 +254,10 @@ print(f"dotenv_path = {dotenv_path}")
 if not dotenv_path.is_file():
     print(f"Файл .env не найден в директории: {current_dir}")
 
-API_KEY = os.getenv("API_KEY_EXCHANGE_RATES")  # "q1xBP6wP6VEfymRmntgsFxdABB35xlKm"  # os.getenv("API_KEY_EXCHANGE_RATES")
-print(f"===API_KEY = {API_KEY}")
-if not API_KEY:
+API_KEY_EXCHANGE_RATES = os.getenv("API_KEY_EXCHANGE_RATES")
+print(f"===API_KEY_EXCHANGE_RATES = {API_KEY_EXCHANGE_RATES}")
+if not API_KEY_EXCHANGE_RATES:
     raise ValueError("API ключ не найден!")
-
 
 
 def get_currency_rates(user_currencies: list) -> list:
@@ -272,7 +271,7 @@ def get_currency_rates(user_currencies: list) -> list:
 
         # ссылка на сервис: https://marketplace.apilayer.com/exchangerates_data-api?utm_source=apilayermarketplace&utm_medium=featured
         url = f"https://api.apilayer.com/exchangerates_data/convert?to=RUB&from={currency}&amount={rate}"
-        headers = {"apikey": API_KEY}
+        headers = {"apikey": API_KEY_EXCHANGE_RATES}
         print(f"url = {url}")
 
         # Выполняем GET-запрос к сайту и сохраняем ответ в переменную response
@@ -282,11 +281,11 @@ def get_currency_rates(user_currencies: list) -> list:
         print(f"data = response.json() = {data}")
 
         if "result" in data:
-            # Извлекаем из API-запроса сумму транзакции в рублях
+            # Извлекаем из API-запроса обменный курс
             amount = data["result"]
             print(f"amount = {amount}")
         else:
-            print("==============Предупреждение: операция без result")
+            print("Предупреждение: операция без result")
 
         # Получаем статус-код из ответа и выводим его на экран
         status_code = response.status_code
@@ -304,7 +303,7 @@ def get_currency_rates(user_currencies: list) -> list:
         # Создаем новый список с нужными полями
         currency_rates = {
             "currency": currency,
-            "rate": f"{Decimal(amount):.2f}"
+            "rate": round(float(amount), 2)
         }
 
         result.append(currency_rates)
@@ -314,72 +313,61 @@ def get_currency_rates(user_currencies: list) -> list:
 
 
 # стоимость акций (акции берем из файла user_settings.json)
-def get_stock_prices(user_stocks: list) -> list:
-    """ """
 
+API_KEY_STOCK_PRICES = os.getenv("API_KEY_STOCK_PRICES")
+print(f"===API_KEY_STOCK_PRICES = {API_KEY_STOCK_PRICES}")
+if not API_KEY_STOCK_PRICES:
+    raise ValueError("API ключ не найден!")
+
+
+def get_stock_prices(user_stocks: list) -> dict:
+    """ """
     # Создаем список для хранения результатов по валютам
     result = []
-
-    rate = "1.0"
 
     for item in user_stocks:
         stock = item
 
-        # ссылка на сервис: https://marketplace.apilayer.com/exchangerates_data-api?utm_source=apilayermarketplace&utm_medium=featured
-        # ссылка на сервис: https://marketplace.apilayer.com/marketstack-api?utm_source=apilayermarketplace&utm_medium=featured
+        # ДОКУМЕНТЫ:
+        # https://site.financialmodelingprep.com/developer/docs
+        # https://site.financialmodelingprep.com/developer/docs/pricing
 
         # ИСПОЛЬЗУЙ ЭТО:
-        # https://site.financialmodelingprep.com/developer/docs/pricing
-        # https://site.financialmodelingprep.com/developer/docs
-        # https://site.financialmodelingprep.com/developer/docs/stable/search-company-screener
-
-        # ИСПОЛЬЗУЙ ЭТО +++:
         # https://site.financialmodelingprep.com/developer/docs/stable/peers
-        # https://financialmodelingprep.com/stable/stock-peers?symbol=AAPL
-        # RESPONSE:
-        # [
-        #     {
-        #         "symbol": "GPRO",
-        #         "companyName": "GoPro, Inc.",
-        #         "price": 0.9668,
-        #         "mktCap": 152173717
-        #     }
-        # ]
-
-        # https://financialmodelingprep.com/stable/search-exchange-variants?symbol=AAPL
+        # https://financialmodelingprep.com/stable/profile?symbol=AAPL&apikey=...
         # RESPONSE:
         # [
         #     {
         #         "symbol": "AAPL",
-        #         "price": 225.46,
+        #         "price": 232.8,
+        #         "marketCap": 3500823120000,
         #         "beta": 1.24,
-        #         "volAvg": 54722288,
-        #         "mktCap": 3427916386000,
-        #         "lastDiv": 1,
-        #         "range": "164.08-237.23",
-        #         "changes": -7.54,
+        #         "lastDividend": 0.99,
+        #         "range": "164.08-260.1",
+        #         "change": 4.79,
+        #         "changePercentage": 2.1008,
+        #         "volume": 0,
+        #         "averageVolume": 50542058,
         #         "companyName": "Apple Inc.",
         #         "currency": "USD",
         #         "cik": "0000320193",
         #         "isin": "US0378331005",
         #         "cusip": "037833100",
-        #         "exchange": "NASDAQ Global Select",
-        #         "exchangeShortName": "NASDAQ",
+        #         "exchangeFullName": "NASDAQ Global Select",
+        #         "exchange": "NASDAQ",
         #         "industry": "Consumer Electronics",
         #         "website": "https://www.apple.com",
         #         "description": "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide. The company offers iPhone, a line of smartphones; Mac, a line of personal computers; iPad, a line of multi-purpose tablets; and wearables, home, and accessories comprising AirPods, Apple TV, Apple Watch, Beats products, and HomePod. It also provides AppleCare support and cloud services; and operates various platforms, including the App Store that allow customers to discov...",
         #         "ceo": "Mr. Timothy D. Cook",
         #         "sector": "Technology",
         #         "country": "US",
-        #         "fullTimeEmployees": "161000",
-        #         "phone": "408 996 1010",
+        #         "fullTimeEmployees": "164000",
+        #         "phone": "(408) 996-1010",
         #         "address": "One Apple Park Way",
         #         "city": "Cupertino",
         #         "state": "CA",
         #         "zip": "95014",
-        #         "dcfDiff": 62.45842,
-        #         "dcf": 161.68157666868984,
-        #         "image": "https://financialmodelingprep.com/image-stock/AAPL.png",
+        #         "image": "https://images.financialmodelingprep.com/symbol/AAPL.png",
         #         "ipoDate": "1980-12-12",
         #         "defaultImage": false,
         #         "isEtf": false,
@@ -388,19 +376,24 @@ def get_stock_prices(user_stocks: list) -> list:
         #         "isFund": false
         #     }
         # ]
-        url = f"https://financialmodelingprep.com/stable/stock-peers?symbol={stock}"
-        headers = {"apikey": API_KEY}
+
+        url_with_apikey = f"https://financialmodelingprep.com/stable/profile?symbol={stock}&apikey={API_KEY_STOCK_PRICES}"
+        print(f"url_w_apikey = {url_with_apikey}")
 
         # Выполняем GET-запрос к сайту и сохраняем ответ в переменную response
-        response = requests.get(url, headers=headers)
+        response = requests.get(url_w_apikey)  #, headers=headers)
+        # print(f"response = {response}")
 
         data = response.json()  # Преобразуем ответ в словарь
+        # print(f"response.json() = {response.json()}")
+        # print(f"data = {data}")
 
-        if "price" in data:
-            # Извлекаем из API-запроса сумму транзакции в рублях
-            amount = data["price"]
+        if "price" in data[0]:
+            # Извлекаем из API-запроса цену акции
+            price = data[0]['price']  # получаем значение price
+            print(f"price in 'if' = {price}")
         else:
-            print("==============Предупреждение: операция без price")
+            print("Предупреждение: операция без price")
 
         # Получаем статус-код из ответа и выводим его на экран
         status_code = response.status_code
@@ -418,109 +411,12 @@ def get_stock_prices(user_stocks: list) -> list:
         # Создаем новый список с нужными полями
         stock_prices = {
             "stock": stock,
-            "price": price
+            "price": round(float(price), 2)
         }
 
         result.append(stock_prices)
 
     return result
-
-# def get_exchange_rate(transaction_amount: str = "1000.0", currency: str = "RUB") -> float:
-#     """
-#     Функция для получения обменного курса и конвертации суммы
-#     :param transaction_amount: сумма для конвертации (по умолчанию 1000.0)
-#     :param currency: валюта (по умолчанию 'RUB')
-#     :return: конвертированная сумма в рублях
-#     """
-#     if currency != "RUB":
-#         url = f"https://api.apilayer.com/exchangerates_data/convert?to=RUB&from={currency}&amount={transaction_amount}"
-#         headers = {"apikey": API_KEY}
-#
-#         # Выполняем GET-запрос к сайту и сохраняем ответ в переменную response
-#         response = requests.get(url, headers=headers)
-#
-#         data = response.json()  # Преобразуем ответ в словарь
-#
-#         if "result" in data:
-#             # Извлекаем из API-запроса сумму транзакции в рублях
-#             amount = data["result"]
-#         else:
-#             print("==============Предупреждение: операция без result")
-#
-#         # Получаем статус-код из ответа и выводим его на экран
-#         status_code = response.status_code
-#         print(f"Статус код: {status_code}")
-#
-#         # Проверяем, равен ли статус-код 200, то есть чтобы запрос был успешным
-#         if status_code == 200:
-#             # Выводим содержимое сайта на экран
-#             content = response.text
-#             print(f"Содержимое сайта:\n{content}")
-#         else:
-#             # Выводим сообщение об ошибке
-#             print(f"Запрос не был успешным. Возможная причина: {response.reason}")
-#     else:
-#         amount = transaction_amount
-#     return float(amount)
-
-
-
-
-
-
-
-
-    # Создаем словарь для хранения результатов по топ-транзакциям
-    # result = {}
-
-
-
-  # "top_transactions": [
-  #   {
-  #     "date": "21.12.2021",
-  #     "amount": 1198.23,
-  #     "category": "Переводы",
-  #     "description": "Перевод Кредитная карта. ТП 10.2 RUR"
-  #   },
-  #   {
-  #     "date": "20.12.2021",
-  #     "amount": 829.00,
-  #     "category": "Супермаркеты",
-  #     "description": "Лента"
-  #   },
-  #   {
-  #     "date": "20.12.2021",
-  #     "amount": 421.00,
-  #     "category": "Различные товары",
-  #     "description": "Ozon.ru"
-  #   },
-  #   {
-  #     "date": "16.12.2021",
-  #     "amount": -14216.42,
-  #     "category": "ЖКХ",
-  #     "description": "ЖКУ Квартира"
-  #   },
-  #   {
-  #     "date": "16.12.2021",
-  #     "amount": 453.00,
-  #     "category": "Бонусы",
-  #     "description": "Кешбэк за обычные покупки"
-  #   }
-  # ],
-  #
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

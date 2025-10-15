@@ -150,25 +150,27 @@ def read_transactions_from_excel(file_path: str = "data/operations.xlsx") -> Lis
 # Чтение из JSON-файла в ===============================================================список словарей
 def read_user_settings_json(user_settings_json: str) -> dict:
     """ """
-    # try:
-    # Получаем путь к корню проекта
-    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    # Формируем полный путь
-    full_path = os.path.join(project_root, user_settings_json)
-    print(full_path)
-    # Читаем JSON файл
-    with open(full_path, 'r', encoding='utf-8') as file:
-        user_settings = json.load(file)
-    print(user_settings)
-    return user_settings
+    try:
+        # Получаем путь к корню проекта
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
-    # except FileNotFoundError:
-    #     print(f"Ошибка: файл {file_path} не найден")
-    #     return []
-    #
-    # except Exception as e:
-    #     print(f"Произошла ошибка при чтении файла: {str(e)}")
-    #     return []
+        # Формируем полный путь
+        full_path = os.path.join(project_root, user_settings_json)
+        print(full_path)
+
+        # Читаем JSON файл
+        with open(full_path, 'r', encoding='utf-8') as file:
+            user_settings = json.load(file)
+
+        return user_settings
+
+    except FileNotFoundError:
+        print(f"Ошибка: файл {file_path} не найден")
+        return []
+
+    except Exception as e:
+        print(f"Произошла ошибка при чтении файла: {str(e)}")
+        return []
 
 
 
