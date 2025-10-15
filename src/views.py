@@ -381,12 +381,12 @@ def get_stock_prices(user_stocks: list) -> dict:
         print(f"url_w_apikey = {url_with_apikey}")
 
         # Выполняем GET-запрос к сайту и сохраняем ответ в переменную response
-        response = requests.get(url_w_apikey)  #, headers=headers)
-        # print(f"response = {response}")
+        response = requests.get(url_with_apikey)  #, headers=headers)
+        print(f"response = {response}")
 
         data = response.json()  # Преобразуем ответ в словарь
-        # print(f"response.json() = {response.json()}")
-        # print(f"data = {data}")
+        print(f"response.json() = {response.json()}")
+        print(f"data = {data}")
 
         if "price" in data[0]:
             # Извлекаем из API-запроса цену акции

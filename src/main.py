@@ -21,11 +21,11 @@ json_answer_common_page = {
 
 # Инициализация пустых массивов с базовой структурой
 json_answer_common_page["cards"] = [
-    {"last_digits": "", "total_spent": Decimal('0.00'), "cashback": Decimal('0.00')} # Инициализация с Decimal
+    {"last_digits": "", "total_spent": 0.00, "cashback": 0.00} # Инициализация с Decimal
 ]
 
 json_answer_common_page["top_transactions"] = [
-    {"date": "", "amount": Decimal('0.00'), "category": "", "description": ""} # Инициализация с Decimal
+    {"date": "", "amount": 0.00, "category": "", "description": ""} # Инициализация с Decimal
 ]
 
 json_answer_common_page["currency_rates"] = [
@@ -104,6 +104,7 @@ json_answer_common_page["stock_prices"] = [
 #     json_answer_common_page["top_transactions"].append(item)
 # print(json_answer_common_page)
 
+
 # Открываем файл JSON и считываем из него данные в список
 user_settings = read_user_settings_json("user_settings.json")
 print(f"user_settings = {user_settings}")
@@ -113,8 +114,8 @@ print(f"user_settings = {user_settings}")
 # print(f"user_settings_currency = {user_settings_currencies}")
 #
 # # Записываем список курсов валют в итоговый список
-# # currency_rates_list = get_currency_rates(user_settings_currencies)
-# currency_rates_list = [{'currency': 'USD', 'rate': '79.12'}, {'currency': 'EUR', 'rate': '92.05'}]
+# currency_rates_list = get_currency_rates(user_settings_currencies)
+# # currency_rates_list = [{'currency': 'USD', 'rate': 79.12}, {'currency': 'EUR', 'rate': 92.05}]
 #
 # # Очищаем существующий массив
 # json_answer_common_page["currency_rates"].clear()
@@ -129,8 +130,8 @@ user_settings_stocks = user_settings["user_stocks"]
 print(f"user_settings_stocks = {user_settings_stocks}")
 
 # Записываем список цен акций в итоговый список
-# stock_prices_list = get_stock_prices(user_settings_stocks)
-stock_prices_list = [{'stock': 'AAPL', 'price': 247.77}, {'stock': 'AMZN', 'price': 216.39}, {'stock': 'GOOGL', 'price': 245.45}, {'stock': 'MSFT', 'price': 513.57}, {'stock': 'TSLA', 'price': 429.24}]
+stock_prices_list = get_stock_prices(user_settings_stocks)
+# stock_prices_list = [{'stock': 'AAPL', 'price': 247.77}, {'stock': 'AMZN', 'price': 216.39}, {'stock': 'GOOGL', 'price': 245.45}, {'stock': 'MSFT', 'price': 513.57}, {'stock': 'TSLA', 'price': 429.24}]
 print(f"stock_prices_list = {stock_prices_list}")
 
 # Очищаем существующий массив
@@ -142,6 +143,7 @@ for item in stock_prices_list:
 print(json_answer_common_page)
 
 # Полный JSON-ответ - ГОТОВ
+
 
 
 #
