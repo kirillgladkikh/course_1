@@ -396,11 +396,11 @@ def get_stock_prices(user_stocks: list) -> list:
 
         data = response.json()  # Преобразуем ответ в словарь
 
-        if "result" in data:
+        if "price" in data:
             # Извлекаем из API-запроса сумму транзакции в рублях
-            amount = data["result"]
+            amount = data["price"]
         else:
-            print("==============Предупреждение: операция без result")
+            print("==============Предупреждение: операция без price")
 
         # Получаем статус-код из ответа и выводим его на экран
         status_code = response.status_code
