@@ -24,14 +24,6 @@ def investment_bank(
     :param month: строка, содержащая месяц в формате 'YYYY-MM', за который производится расчет
     :param limit: порог округления сумм транзакций (Decimal, допустимые значения: 10, 50, 100)
     :return: общая сумма накоплений за указанный месяц, округленная до двух знаков после запятой (Decimal)
-
-    Пример использования:
-    >>> transactions = [
-    ...     {'transaction_date': Timestamp('2023-10-01 12:00:00'), 'payment_amount': Decimal('123.45')},
-    ...     {'transaction_date': Timestamp('2023-10-15 15:30:00'), 'payment_amount': Decimal('78.90')}
-    ... ]
-    >>> investment_bank(transactions, '2023-10', Decimal('100'))
-    Decimal('137.65')
     """
     # Фильтрация транзакций по месяцу
     filtered_transactions = []
@@ -107,4 +99,4 @@ if __name__ == "__main__":
     coin_limit_decimal = Decimal(str(coin_limit))
 
     result = investment_bank(transactions_full, coin_month, coin_limit_decimal)
-    print(f"Сумма в инвесткопилке (лимит: ₽ {coin_limit}, период: {coin_month}): ₽ {result}")  # Вывод: ₽ 54.00
+    print(f"\nСумма в инвесткопилке (лимит: ₽ {coin_limit}, период: {coin_month}): ₽ {result}")  # Вывод: ₽ 54.00
