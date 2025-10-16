@@ -151,7 +151,6 @@ json_string = json.dumps(
     indent=4
 )
 print(f"json_string = {json_string}")
-# Сохраняем в файл
-with open('common_page_json_answer.json', 'w', encoding='utf-8') as file:
-    file.write(json_string)
-
+# # Сохраняем в файл
+# with open('common_page_json_answer.json', 'w', encoding='utf-8') as file:
+#     file.write(json_string)
