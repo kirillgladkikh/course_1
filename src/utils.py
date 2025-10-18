@@ -13,7 +13,7 @@ import heapq
 from datetime import datetime, timedelta
 from typing import List, Dict, Union
 from pandas import Timestamp
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -514,18 +514,35 @@ def get_cards_data(transactions_filtered: List[Dict]) -> List[Dict]:
 
             # Получаем сумму транзакции и кешбэк
             try:
-                # Преобразуем строки в числа, если они хранятся как строки
-                # transaction_amount = float(transaction["transaction_amount"])
+                # Добавлена проверка на None
+                if transaction["transaction_amount"] is None:
+                    raise ValueError("Значение транзакции None")
 
-                transaction_amount = transaction["transaction_amount"]
-                cashback_amount = transaction["cashback_amount"]
+                # Преобразование в Decimal осталось прежним
+                transaction_amount = Decimal(str(transaction["transaction_amount"]))
+                cashback_amount = Decimal(str(transaction["cashback_amount"]))
 
-                # print(f'transaction["cashback_amount"]: {transaction["cashback_amount"]} {type(transaction["cashback_amount"])}')
-                # print(f'cashback_amount: {cashback_amount} {type(cashback_amount)}')
+                # Добавлена проверка на отрицательные значения
+                if transaction_amount < 0 or cashback_amount < 0:
+                    raise ValueError("Отрицательные значения")
 
-            except ValueError:
+            except (ValueError, TypeError, InvalidOperation):  # Расширен список исключений
                 print(f"Ошибка преобразования данных для карты {last_digits}")
                 continue
+
+            # try:
+            #     # Преобразуем строки в числа, если они хранятся как строки
+            #     # transaction_amount = float(transaction["transaction_amount"])
+            #
+            #     transaction_amount = transaction["transaction_amount"]
+            #     cashback_amount = transaction["cashback_amount"]
+            #
+            #     # print(f'transaction["cashback_amount"]: {transaction["cashback_amount"]} {type(transaction["cashback_amount"])}')
+            #     # print(f'cashback_amount: {cashback_amount} {type(cashback_amount)}')
+            #
+            # except ValueError:
+            #     print(f"Ошибка преобразования данных для карты {last_digits}")
+            #     continue
 
             # Если карта еще не в результатах, добавляем её
             if last_digits not in result:
