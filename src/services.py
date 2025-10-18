@@ -3,7 +3,7 @@ import pandas as pd
 from decimal import Decimal
 from typing import List, Dict
 from datetime import datetime
-from utils import read_transactions_from_excel
+from src.utils import read_transactions_from_excel
 
 
 def investment_bank(
@@ -54,17 +54,21 @@ def investment_bank(
             print(f"Ошибка обработки транзакции {transaction}: {str(e)}")
 
     # Функция округления суммы
-    def round_to_limit(amount: Decimal) -> Decimal:
+    def round_to_limit(amount: Decimal, limit: Decimal) -> Decimal:
+        # Проверяем кратность
+        if amount % limit == 0:
+            return amount
+        # Иначе округляем вверх
         return ((amount // limit) + Decimal('1')) * limit
 
     # Расчет разницы между округленной и реальной суммой
-    def calculate_difference(transaction: Dict) -> Decimal:
+    def calculate_difference(transaction: Dict, limit: Decimal) -> Decimal:
         amount = transaction['payment_amount']  # amount type Decimal
-        rounded_amount = round_to_limit(amount)
+        rounded_amount = round_to_limit(amount, limit)
         return rounded_amount - amount
 
     # Применение функционального подхода
-    differences = map(calculate_difference, filtered_transactions)
+    differences = map(lambda t: calculate_difference(t, limit), filtered_transactions)
 
     # Суммирование с начальным значением Decimal
     total_amount = sum(differences, start=Decimal('0.00'))
