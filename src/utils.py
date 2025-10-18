@@ -783,6 +783,9 @@ def get_currency_rates(user_currencies: list) -> list:
         # print(f"url = {url}")
         # print(f"data = response.json() = {data}")
 
+        # Инициализируем amount значением None
+        amount = None
+
         if "result" in data:
             # Извлекаем из API-запроса обменный курс
             amount = data["result"]
@@ -793,25 +796,30 @@ def get_currency_rates(user_currencies: list) -> list:
 
         # Получаем статус-код из ответа и выводим его на экран
         status_code = response.status_code
-        print(f"Статус код: {status_code}")
+        # # Выводим отладочную информацию
+        # print(f"Статус код: {status_code}")
 
         # Проверяем, равен ли статус-код 200, то есть чтобы запрос был успешным
         if status_code == 200:
             # Выводим содержимое сайта на экран
             content = response.text
-            print(f"Содержимое сайта:\n{content}")
+            # # Выводим отладочную информацию
+            # print(f"Содержимое сайта:\n{content}")
         else:
             # Выводим сообщение об ошибке
             print(f"Запрос не был успешным. Возможная причина: {response.reason}")
 
         # Создаем новый список с нужными полями
-        currency_rates = {
-            "currency": currency,
-            "rate": round(float(amount), 2)
-        }
+        # Добавляем проверку на наличие amount
+        if amount is not None:
+            currency_rates = {
+                "currency": currency,
+                "rate": round(float(amount), 2)
+            }
+            result.append(currency_rates)
 
-        result.append(currency_rates)
-        print(result)
+        # # Выводим отладочную информацию
+        # print(result)
 
     return result
 
