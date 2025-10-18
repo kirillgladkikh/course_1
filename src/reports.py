@@ -7,6 +7,7 @@ from typing import Callable, Any, Optional
 import pandas as pd
 
 
+# Настройки логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def report_saver(filename: Optional[str] = None):
@@ -28,40 +29,6 @@ def report_saver(filename: Optional[str] = None):
         return wrapper
     return decorator
 
-# # Настройка логирования
-# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-#
-#
-# def report_saver(filename: Optional[str] = None):
-#     def decorator(func: Callable) -> Callable:
-#         def wrapper(*args, **kwargs) -> Any:
-#             # Используем переменную filename из внешнего окружения (из функции decorator),
-#             # а не создаем новую локальную переменную
-#             nonlocal filename
-#
-#             # Получаем результат выполнения функции
-#             result = func(*args, **kwargs)
-#
-#             # Формируем имя файла, если не передано
-#             if filename is None:
-#                 func_name = func.__name__
-#                 timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-#                 filename = f"{func_name}_{timestamp}.json"
-#
-#             try:
-#                 # Сохраняем результат в JSON
-#                 with open(filename, 'w', encoding='utf-8') as f:
-#                     json.dump(result.to_dict(), f, ensure_ascii=False, indent=4)
-#                 logging.info(f"Отчет успешно сохранен в файл {filename}")
-#             except Exception as e:
-#                 logging.error(f"Ошибка при сохранении отчета: {str(e)}")
-#
-#             return result
-#
-#         return wrapper
-#
-#     return decorator
-
 
 # Использование декоратора
 @report_saver()  # Без параметра - используем имя по умолчанию
@@ -81,125 +48,49 @@ def spending_by_workday(transactions: pd.DataFrame,
     pd.DataFrame: DataFrame с двумя строками:
         - 'Рабочий' - средняя сумма трат в рабочие дни
         - 'Выходной' - средняя сумма трат в выходные дни
-
-    Алгоритм работы:
-    1. Преобразует даты транзакций в формат datetime
-    2. Определяет период анализа (последние 3 месяца от указанной или текущей даты)
-    3. Фильтрует транзакции по выбранному периоду
-    4. Разделяет дни на рабочие и выходные
-    5. Вычисляет средние значения трат для каждой категории
     """
-    # Преобразуем колонку с датами в формат datetime
     # Преобразуем даты в нужный формат
-    transactions['Дата операции'] = pd.to_datetime(transactions['Дата операции'],
-                                                   format='%d.%m.%Y %H:%M:%S')
+    transactions['Дата операции'] = pd.to_datetime(
+        transactions['Дата операции'],
+        format='%d.%m.%Y %H:%M:%S'
+    )
 
+    # Определяем текущую дату
     if date is None:
         current_date = datetime.datetime.now()
     else:
         current_date = datetime.datetime.strptime(date, '%Y-%m-%d')
 
+    # Рассчитываем период анализа
     start_date = current_date.replace(day=1) - pd.DateOffset(months=3)
     end_date = current_date
 
-    # Создаем копию DataFrame
+    # Фильтруем транзакции по периоду
     filtered_df = transactions[
         (transactions['Дата операции'] >= start_date) &
         (transactions['Дата операции'] <= end_date)
         ].copy()
 
-    # Проверяем, не пустой ли DataFrame
-    if filtered_df.empty:
-        return pd.DataFrame({'Сумма платежа': {'Рабочий': 0, 'Выходной': 0}})
+    # Разделяем транзакции на рабочие и выходные дни
+    work_days = filtered_df[
+        filtered_df['Дата операции'].dt.dayofweek < 5
+        ]
 
-    # Исправленная группировка
-    filtered_df['Тип дня'] = filtered_df['Дата операции'].dt.dayofweek.map(
-        lambda x: 'Рабочий' if x < 5 else 'Выходной'
-    )
+    weekend_days = filtered_df[
+        filtered_df['Дата операции'].dt.dayofweek >= 5
+        ]
 
-    # Группируем и считаем средние значения
-    result = filtered_df.groupby('Тип дня').agg({
-        'Сумма платежа': 'mean'
-    }).fillna(0)
+    # Считаем средние значения отдельно для каждой категории
+    avg_work = work_days['Сумма платежа'].mean() if not work_days.empty else 0
+    avg_weekend = weekend_days['Сумма платежа'].mean() if not weekend_days.empty else 0
 
-    # Добавляем недостающие категории
-    result = result.reindex(['Рабочий', 'Выходной']).fillna(0)
-
-    # Добавляем проверку на наличие транзакций в каждой категории
-    if 'Рабочий' not in result.index:
-        result.loc['Рабочий'] = {'Сумма платежа': 0}
-    if 'Выходной' not in result.index:
-        result.loc['Выходной'] = {'Сумма платежа': 0}
-
-
-    # transactions['Дата операции'] = pd.to_datetime(transactions['Дата операции'], format='%d.%m.%Y %H:%M:%S')
-    #
-    # # Получаем текущую дату, если не передана
-    # if date is None:
-    #     current_date = datetime.datetime.now()
-    # else:
-    #     current_date = datetime.datetime.strptime(date, '%Y-%m-%d')
-    #
-    # # Определяем диапазон дат (последние 3 месяца)
-    # start_date = current_date.replace(day=1) - pd.DateOffset(months=3)
-    # end_date = current_date
-    #
-    # # # Выводим отладочную информацию
-    # # print(f"current_date = {current_date}")
-    # # print(f"start_date = {start_date}")
-    # # print(f"end_date = {end_date}")
-    #
-    # # Создаем копию DataFrame, чтобы избежать предупреждения
-    # filtered_df = transactions[
-    #     (transactions['Дата операции'] >= start_date) &
-    #     (transactions['Дата операции'] <= end_date)
-    #     ].copy()  # Добавляем .copy()
-    #
-    # # Исправленная группировка
-    # filtered_df['Тип дня'] = filtered_df['Дата операции'].dt.dayofweek.map(
-    #     lambda x: 'Рабочий' if x < 5 else 'Выходной'
-    # )
-    #
-    # result = filtered_df.groupby('Тип дня').agg({
-    #     'Сумма платежа': 'mean'
-    # }).fillna(0)
-    #
-    # # Добавляем недостающие категории
-    # result = result.reindex(['Рабочий', 'Выходной']).fillna(0)
-
-    # # Добавляем колонку с определением выходных
-    # filtered_df['Тип дня'] = filtered_df['Дата операции'].dt.dayofweek.map(
-    #     lambda x: 'Рабочий' if x < 5 else 'Выходной'
-    # )
-    #
-    # # # Добавляем колонку с определением выходных
-    # # filtered_df = filtered_df.assign(
-    # #     is_weekend=filtered_df['Дата операции'].dt.dayofweek >= 5
-    # # )
-    #
-    # # Добавляем колонку с названием дня недели для наглядности
-    # filtered_df['День недели'] = filtered_df['Дата операции'].dt.day_name()
-    #
-    # # # Выводим отладочную информацию
-    # # print(filtered_df)
-    #
-    # # Группировка по типу дня
-    # result = filtered_df.groupby('Тип дня').agg({
-    #     'Сумма платежа': 'mean'
-    # }).fillna(0)
-    #
-    # # # Исправленная группировка по типу дня
-    # # result = filtered_df.groupby(filtered_df['Дата операции'].dt.dayofweek < 5).agg({
-    # #     'Сумма платежа': 'mean'
-    # # }).rename(index={True: 'Рабочий', False: 'Выходной'})
-    #
-    # # Добавляем отсутствующие категории, если они есть
-    # result = result.reindex(['Рабочий', 'Выходной']).fillna(0)
-    #
-    # # # Группируем по типу дня и считаем средние траты
-    # # result = filtered_df.groupby('is_weekend').agg({
-    # #     'Сумма платежа': 'mean'
-    # # }).rename(index={True: 'Выходной', False: 'Рабочий'})
+    # Формируем итоговый результат с явным приведением к float
+    result = pd.DataFrame({
+        'Сумма платежа': {
+            'Рабочий': avg_work,
+            'Выходной': avg_weekend
+        }
+    }).astype(float)
 
     return result
 
@@ -211,6 +102,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 full_path = os.path.join(project_root, file_path)
 
 df = pd.read_excel(full_path)
+# print(df)
 
 # # Выводим отладочную информацию
 # print(f"full_path = {full_path}")
