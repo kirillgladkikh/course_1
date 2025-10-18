@@ -288,7 +288,7 @@ def read_user_settings_json(user_settings_json: str) -> dict:
         return user_settings
 
     except FileNotFoundError:
-        print(f"Ошибка: файл {file_path} не найден")
+        print(f"Ошибка: файл {full_path} не найден")
         return []
 
     except Exception as e:
