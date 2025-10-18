@@ -416,9 +416,17 @@ def get_transactions_filtered(transactions_full: List[Dict], target_datetime: Un
     - Если transaction_date не является объектом Timestamp, транзакция пропускается
     - При возникновении ошибок KeyError или ValueError выводится сообщение об ошибке
     """
+    # Обработка случая, когда transactions_full равен None
+    if transactions_full is None:
+        return []
+
     # Если target_datetime - строка, преобразуем её в Timestamp
     if isinstance(target_datetime, str):
-        target_datetime = Timestamp(target_datetime)
+        try:
+            target_datetime = Timestamp(target_datetime)
+        except Exception as e:
+            print(f"Ошибка при преобразовании даты: {e}")
+            return []
 
     # Получаем первый день месяца для указанной даты
     first_day_of_month = target_datetime.replace(day=1, hour=0, minute=0, second=0)
@@ -427,29 +435,18 @@ def get_transactions_filtered(transactions_full: List[Dict], target_datetime: Un
     filtered_transactions = []
 
     for transaction in transactions_full:
-
         try:
-            # Получаем дату транзакции
-            date_obj = transaction["transaction_date"]
+            # Проверяем наличие и корректность transaction_date
+            if not isinstance(transaction.get("transaction_date"), Timestamp):
+                continue
 
-            # Проверяем тип date_obj
-            if not isinstance(date_obj, Timestamp):
-                raise ValueError("transaction_date не является Timestamp")
-
-            # print(f"\nfirst_day_of_month {first_day_of_month} <= date_obj {date_obj} <= input_day_of_month {input_day_of_month}")
-
-            # Проверяем, попадает ли дата транзакции в нужный диапазон
-            if first_day_of_month <= date_obj <= input_day_of_month:
-
-                # print(f"transaction in transactions_full {transaction}")
-
+            # Фильтруем по дате
+            if (transaction["transaction_date"] >= first_day_of_month and
+                    transaction["transaction_date"] <= target_datetime):
                 filtered_transactions.append(transaction)
 
-                # print(f"transaction in filtered_transactions {filtered_transactions[-1]}")
-
-        except (KeyError, ValueError) as e:
+        except Exception as e:
             print(f"Ошибка при обработке транзакции: {e}")
-            continue
 
     return filtered_transactions
 
