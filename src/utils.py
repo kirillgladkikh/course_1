@@ -65,22 +65,36 @@ def safe_convert(value: str) -> Decimal:
         if not value.strip() or value.lower() == 'nan':
             return Decimal('0.00')
 
-        # Замена запятой на точку для корректного преобразования
+        # Замена запятой на точку
         value = value.replace(',', '.')
 
         # Удаление лишних пробелов
         value = value.strip()
 
-        # Обработка случая с разделителем тысяч
-        if '.' in value:
-            # Разделяем целую и дробную части
-            parts = value.split('.')
-            # Если после точки только нули или одна цифра, считаем это разделителем тысяч
-            if len(parts) == 2 and (len(parts[1]) == 1 or parts[1] == '00'):
-                value = parts[0].replace('.', '') + '.' + parts[1]
+        # Обработка разделителей тысяч
+        # Находим последнюю точку как десятичный разделитель
+        parts = value.rsplit('.', 1)
+
+        # Проверка корректности разделения
+        if len(parts) == 2:
+            integer_part = parts[0].replace('.', '')
+            decimal_part = parts[1]
+
+            # Проверка на корректность числовых частей
+            if not integer_part.isdigit() and not decimal_part.isdigit():
+                return Decimal('0.00')
+
+            value = f"{integer_part}.{decimal_part}"
+        else:
+            # Если нет явного десятичного разделителя
+            value = value.replace('.', '')
 
         # Проверка на пустую строку после обработки
         if not value:
+            return Decimal('0.00')
+
+        # Проверка на корректность числового значения
+        if not value.replace('.', '', 1).isdigit():
             return Decimal('0.00')
 
         # Преобразование в Decimal
@@ -90,7 +104,6 @@ def safe_convert(value: str) -> Decimal:
         return decimal_value.quantize(Decimal('0.00'))
 
     except (ValueError, TypeError):
-        # Обработка ошибок преобразования
         return Decimal('0.00')
 
 

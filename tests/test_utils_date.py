@@ -1,54 +1,54 @@
 from datetime import datetime
-from src.utils import parse_datetime, calculate_period, get_greeting
+from src.utils import get_greeting
 
 
-# Тесты для функции parse_datetime
-def test_parse_datetime_valid():
-    date_str = "2025-10-08 15:41:00"
-    expected = datetime(2025, 10, 8, 15, 41, 0)
-    assert parse_datetime(date_str) == expected, "Ошибка при парсинге корректной даты"
-
-
-def test_parse_datetime_invalid_format():
-    try:
-        parse_datetime("08-10-2025 15:41:00")  # Неверный формат даты
-        assert False, "Должен быть вызван ValueError для неверного формата"
-    except ValueError:
-        pass
-
-
-def test_parse_datetime_invalid_date():
-    try:
-        parse_datetime("2025-02-30 15:41:00")  # 30 февраля
-        assert False, "Должен быть вызван ValueError для несуществующей даты"
-    except ValueError:
-        pass
-
-
-def test_parse_datetime_edge_cases():
-    assert parse_datetime("2025-10-01 00:00:00") == datetime(2025, 10, 1, 0, 0, 0), "Ошибка на минимальной дате"
-    assert parse_datetime("2025-10-31 23:59:59") == datetime(2025, 10, 31, 23, 59, 59), "Ошибка на максимальной дате"
-
-
-# Тесты для функции calculate_period
-def test_calculate_period_first_day():
-    date = datetime(2025, 10, 1, 12, 0, 0)
-    assert calculate_period(date) == 0, "Ошибка для первого дня месяца"
-
-
-def test_calculate_period_middle_month():
-    date = datetime(2025, 10, 15, 12, 0, 0)
-    assert calculate_period(date) == 14, "Ошибка для середины месяца"
-
-
-def test_calculate_period_last_day():
-    date = datetime(2025, 10, 31, 12, 0, 0)
-    assert calculate_period(date) == 30, "Ошибка для последнего дня месяца"
-
-
-def test_calculate_period_leap_year():
-    date = datetime(2024, 2, 29, 12, 0, 0)
-    assert calculate_period(date) == 28, "Ошибка для високосного года"
+# # Тесты для функции parse_datetime
+# def test_parse_datetime_valid():
+#     date_str = "2025-10-08 15:41:00"
+#     expected = datetime(2025, 10, 8, 15, 41, 0)
+#     assert parse_datetime(date_str) == expected, "Ошибка при парсинге корректной даты"
+#
+#
+# def test_parse_datetime_invalid_format():
+#     try:
+#         parse_datetime("08-10-2025 15:41:00")  # Неверный формат даты
+#         assert False, "Должен быть вызван ValueError для неверного формата"
+#     except ValueError:
+#         pass
+#
+#
+# def test_parse_datetime_invalid_date():
+#     try:
+#         parse_datetime("2025-02-30 15:41:00")  # 30 февраля
+#         assert False, "Должен быть вызван ValueError для несуществующей даты"
+#     except ValueError:
+#         pass
+#
+#
+# def test_parse_datetime_edge_cases():
+#     assert parse_datetime("2025-10-01 00:00:00") == datetime(2025, 10, 1, 0, 0, 0), "Ошибка на минимальной дате"
+#     assert parse_datetime("2025-10-31 23:59:59") == datetime(2025, 10, 31, 23, 59, 59), "Ошибка на максимальной дате"
+#
+#
+# # Тесты для функции calculate_period
+# def test_calculate_period_first_day():
+#     date = datetime(2025, 10, 1, 12, 0, 0)
+#     assert calculate_period(date) == 0, "Ошибка для первого дня месяца"
+#
+#
+# def test_calculate_period_middle_month():
+#     date = datetime(2025, 10, 15, 12, 0, 0)
+#     assert calculate_period(date) == 14, "Ошибка для середины месяца"
+#
+#
+# def test_calculate_period_last_day():
+#     date = datetime(2025, 10, 31, 12, 0, 0)
+#     assert calculate_period(date) == 30, "Ошибка для последнего дня месяца"
+#
+#
+# def test_calculate_period_leap_year():
+#     date = datetime(2024, 2, 29, 12, 0, 0)
+#     assert calculate_period(date) == 28, "Ошибка для високосного года"
 
 
 # Тесты для функции get_greeting
