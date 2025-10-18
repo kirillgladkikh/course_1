@@ -296,54 +296,6 @@ def read_user_settings_json(user_settings_json: str) -> dict:
         return []
 
 
-# # Утилиты для модуля views.py
-# def convert_date_format(date_str: str = "31.12.2021 16:44:00") -> str:
-#     """
-#     Конвертирует строку с датой из формата DD.MM.YYYY HH:MM:SS в формат YYYY-MM-DD HH:MM:SS.
-#
-#     Функция принимает строку с датой в определённом формате и возвращает её же, но в другом формате.
-#     Используется для преобразования дат между популярными форматами записи.
-#
-#     Параметры:
-#     date_str (str): Строка с датой в формате DD.MM.YYYY HH:MM:SS.
-#         По умолчанию используется значение "31.12.2021 16:44:00".
-#
-#     Возвращаемое значение:
-#     str: Строка с датой в формате YYYY-MM-DD HH:MM:SS
-#         или сообщение об ошибке при некорректном вводе.
-#
-#     Форматы дат:
-#     Исходный формат (original_format):
-#     - %d: день месяца (с ведущими нулями)
-#     - %m: месяц (с ведущими нулями)
-#     - %Y: год (4 цифры)
-#     - %H: часы (24-часовой формат)
-#     - %M: минуты
-#     - %S: секунды
-#
-#     Новый формат (new_format):
-#     - %Y: год (4 цифры)
-#     - %m: месяц (с ведущими нулями)
-#     - %d: день месяца (с ведущими нулями)
-#     - %H: часы (24-часовой формат)
-#     - %M: минуты
-#     - %S: секунды
-#
-#     Обработка ошибок:
-#     При некорректном формате входной строки возвращается сообщение об ошибке.
-#     """
-#     try:
-#         # Парсим исходную дату
-#         original_format = "%d.%m.%Y %H:%M:%S"
-#         new_format = "%Y-%m-%d %H:%M:%S"
-#         # Преобразуем строку DD.MM.YYYY HH:MM:SS в объект datetime
-#         date_obj = datetime.strptime(date_str, original_format)
-#         # Форматируем объект datetime в строку формата YYYY-MM-DD HH:MM:SS
-#         return date_obj.strftime(new_format)
-#     except ValueError:
-#         return "Ошибка: некорректный формат даты"
-
-
 # FROM VIEWS.PY
 
 # Основные функции для генерации JSON-ответа
@@ -638,7 +590,9 @@ def get_top_transactions(transactions_filtered: List[Dict]) -> List[Dict]:
     return transactions_top
 
 
-def timestamp_to_str(timestamp_date: Union[Timestamp, str]) -> str:
+def timestamp_to_str(timestamp_date: Union[Timestamp, float, str]) -> str:
+# def timestamp_to_str(timestamp_date: Union[float, str]) -> str:
+# def timestamp_to_str(timestamp_date: Union[Timestamp, str]) -> str:
     """
     Преобразует временную метку (timestamp) в строку в формате даты.
 
@@ -652,8 +606,22 @@ def timestamp_to_str(timestamp_date: Union[Timestamp, str]) -> str:
     Возвращает:
     str: Строковое представление даты в формате 'ДД.ММ.ГГГГ'.
     """
-    # Преобразуем Timestamp в datetime объект
-    datetime_obj = datetime.fromtimestamp(timestamp_date.timestamp())
+    # Обработка Timestamp из pandas
+    if isinstance(timestamp_date, Timestamp):
+        datetime_obj = timestamp_date.to_pydatetime()
+    # Обработка строкового представления timestamp
+    elif isinstance(timestamp_date, str):
+        try:
+            timestamp_date = float(timestamp_date)
+            datetime_obj = datetime.fromtimestamp(timestamp_date)
+        except ValueError:
+            raise ValueError("Некорректный формат timestamp")
+    # Обработка float значений
+    elif isinstance(timestamp_date, (float, int)):  # добавили поддержку int для нулевого timestamp
+        datetime_obj = datetime.fromtimestamp(timestamp_date)
+    else:
+        raise ValueError("Неподдерживаемый тип данных")
+
     formatted_date = datetime_obj.strftime('%d.%m.%Y')
     return formatted_date
 
