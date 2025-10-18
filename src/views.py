@@ -115,8 +115,8 @@ user_settings = read_user_settings_json("user_settings.json")
 user_settings_currencies = user_settings["user_currencies"]
 # print(f"user_settings_currency = {user_settings_currencies}")
 # # Записываем список курсов валют в итоговый список
-currency_rates_list = get_currency_rates(user_settings_currencies)
-# currency_rates_list = [{'currency': 'USD', 'rate': 79.12}, {'currency': 'EUR', 'rate': 92.05}]
+# currency_rates_list = get_currency_rates(user_settings_currencies)
+currency_rates_list = [{'currency': 'USD', 'rate': 79.12}, {'currency': 'EUR', 'rate': 92.05}]
 # Очищаем существующий массив
 json_answer_common_page["currency_rates"].clear()
 # Добавляем каждый элемент

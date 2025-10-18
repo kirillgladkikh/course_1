@@ -901,34 +901,55 @@ def get_stock_prices(user_stocks: list) -> dict:
         # print(f"response.json() = {response.json()}")
         # print(f"data = {data}")
 
-        if "price" in data[0]:
-            # Извлекаем из API-запроса цену акции
-            price = data[0]['price']  # получаем значение price
+        # Проверяем тип данных
+        if isinstance(data, list) and len(data) > 0:
+            # Если ответ в формате списка (успешный запрос)
+            if "price" in data[0]:
+                # Извлекаем из API-запроса цену акции
+                price = data[0]['price']  # получаем значение price
 
-            # # Выводим отладочную информацию
-            # print(f"price in 'if' = {price}")
+                # # Выводим отладочную информацию
+                # print(f"price in 'if' = {price}")
+            else:
+                print("Предупреждение: операция без price")
+                continue
+
         else:
-            print("Предупреждение: операция без price")
+            # Если ответ в формате словаря (ошибка API)
+            if "error" in data:
+                print(f"Ошибка API: {data['error']}")
+                continue
+            else:
+                price = None
 
         # Получаем статус-код из ответа и выводим его на экран
         status_code = response.status_code
-        print(f"Статус код: {status_code}")
+
+        # # Выводим отладочную информацию
+        # print(f"Статус код: {status_code}")
 
         # Проверяем, равен ли статус-код 200, то есть чтобы запрос был успешным
         if status_code == 200:
+            # # Выводим отладочную информацию
             # Выводим содержимое сайта на экран
-            content = response.text
-            print(f"Содержимое сайта:\n{content}")
+            # content = response.text
+            # print(f"Содержимое сайта:\n{content}")
+
+            # Создаем новый список с нужными полями
+            # Добавляем проверку на наличие amount
+            if price is not None:
+                stock_prices = {
+                    "stock": stock,
+                    "price": round(float(price), 2)
+                }
+                result.append(stock_prices)
         else:
             # Выводим сообщение об ошибке
             print(f"Запрос не был успешным. Возможная причина: {response.reason}")
 
-        # Создаем новый список с нужными полями
-        stock_prices = {
-            "stock": stock,
-            "price": round(float(price), 2)
-        }
 
-        result.append(stock_prices)
+
+        # # Выводим отладочную информацию
+        # print(result)
 
     return result
