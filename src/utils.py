@@ -530,20 +530,6 @@ def get_cards_data(transactions_filtered: List[Dict]) -> List[Dict]:
                 print(f"Ошибка преобразования данных для карты {last_digits}")
                 continue
 
-            # try:
-            #     # Преобразуем строки в числа, если они хранятся как строки
-            #     # transaction_amount = float(transaction["transaction_amount"])
-            #
-            #     transaction_amount = transaction["transaction_amount"]
-            #     cashback_amount = transaction["cashback_amount"]
-            #
-            #     # print(f'transaction["cashback_amount"]: {transaction["cashback_amount"]} {type(transaction["cashback_amount"])}')
-            #     # print(f'cashback_amount: {cashback_amount} {type(cashback_amount)}')
-            #
-            # except ValueError:
-            #     print(f"Ошибка преобразования данных для карты {last_digits}")
-            #     continue
-
             # Если карта еще не в результатах, добавляем её
             if last_digits not in result:
                 result[last_digits] = {
