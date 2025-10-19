@@ -17,8 +17,9 @@ def report_saver(filename: Optional[str] = None):
             result = func(*args, **kwargs)
             if filename is None:
                 func_name = func.__name__
-                timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-                filename = f"{func_name}_{timestamp}.json"
+                # timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+                # filename = f"{func_name}_{timestamp}.json"
+                filename = f"{func_name}.json"
             try:
                 with open(filename, 'w', encoding='utf-8') as f:
                     json.dump(result.to_dict(), f, ensure_ascii=False, indent=4)
