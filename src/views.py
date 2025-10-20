@@ -134,6 +134,7 @@ def views_page():
     # print(f"user_settings_currency = {user_settings_currencies}")
     # # Записываем список курсов валют в итоговый список
     # currency_rates_list = get_currency_rates(user_settings_currencies)
+    # Используем для экономии API-запросов заглушку для формирования JSON-ответа
     currency_rates_list = [{'currency': 'USD', 'rate': 79.12}, {'currency': 'EUR', 'rate': 92.05}]
     # Очищаем существующий массив
     json_answer_common_page["currency_rates"].clear()
@@ -149,6 +150,7 @@ def views_page():
     # print(f"user_settings_stocks = {user_settings_stocks}")
     # # Записываем список цен акций в итоговый список
     # stock_prices_list = get_stock_prices(user_settings_stocks)
+    # Используем для экономии API-запросов заглушку для формирования JSON-ответа
     stock_prices_list = [{'stock': 'AAPL', 'price': 247.77}, {'stock': 'AMZN', 'price': 216.39}, {'stock': 'GOOGL', 'price': 245.45}, {'stock': 'MSFT', 'price': 513.57}, {'stock': 'TSLA', 'price': 429.24}]
     # print(f"stock_prices_list = {stock_prices_list}")
     # Очищаем существующий массив
