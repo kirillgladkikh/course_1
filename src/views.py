@@ -1,5 +1,7 @@
 import os
 import json
+import logging
+from config import setup_logger
 from datetime import datetime
 from pandas import Timestamp
 from decimal import Decimal
@@ -7,6 +9,11 @@ from src.utils import read_transactions_from_excel, read_user_settings_json, get
 # from src.services import
 # from src.reports import
 
+# Создаем логгер один раз для всего модуля
+setup_logger()
+logger = logging.getLogger(__name__)  # __name__ автоматически содержит имя модуля
+
+logger.info("Выполнение КОДА МОДУЛЯ views.py")
 
 # Инициализация пустой структуры JSON-объекта
 json_answer_common_page = {
@@ -16,6 +23,7 @@ json_answer_common_page = {
     "currency_rates": [],
     "stock_prices": []
 }
+logger.debug(f"Инициализация пустой структуры JSON-объекта: json_answer_common_page: {json_answer_common_page}")
 
 # Инициализация пустых массивов с базовой структурой
 json_answer_common_page["cards"] = [
@@ -33,6 +41,11 @@ json_answer_common_page["currency_rates"] = [
 json_answer_common_page["stock_prices"] = [
     {"stock": "", "price": 0.00}
 ]
+
+logger.debug(f'Инициализация пустых массивов с базовой структурой: json_answer_common_page["cards"]: {json_answer_common_page["cards"]}')
+logger.debug(f'Инициализация пустых массивов с базовой структурой: json_answer_common_page["top_transactions"]: {json_answer_common_page["top_transactions"]}')
+logger.debug(f'Инициализация пустых массивов с базовой структурой: json_answer_common_page["currency_rates"]: {json_answer_common_page["currency_rates"]}')
+logger.debug(f'Инициализация пустых массивов с базовой структурой: json_answer_common_page["stock_prices"]: {json_answer_common_page["stock_prices"]}')
 
 # Считываем транзакции из файла xlsx в список
 transactions_full = read_transactions_from_excel("data/operations.xlsx")

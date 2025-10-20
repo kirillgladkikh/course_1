@@ -6,16 +6,22 @@ import math
 from decimal import Decimal
 from typing import Dict, List
 from datetime import datetime  #, Timestamp
-import os
 import requests
 import math
 import heapq
+import logging
+from config import setup_logger
 from datetime import datetime, timedelta
 from typing import List, Dict, Union
 from pandas import Timestamp
 from decimal import Decimal, InvalidOperation
 from dotenv import load_dotenv
 from pathlib import Path
+
+
+# Создаем логгер один раз для всего модуля
+setup_logger()
+logger = logging.getLogger(__name__)  # __name__ автоматически содержит имя модуля
 
 
 def safe_convert(value: str) -> Decimal:
@@ -142,7 +148,7 @@ def read_transactions_from_excel(file_path: str = "data/operations.xlsx") -> Lis
     invest_amount_rounded - Округление на «Инвесткопилку» — сумма, которая была округлена и переведена на «Инвесткопилку».
     transaction_amount_rounded - Сумма операции с округлением — сумма транзакции, округленная до ближайшего целого числа.
 
-        Структура каждой транзакции (поля и их описание):
+    Структура каждой транзакции (поля и их описание):
     transaction_date (datetime): дата операции
     payment_date (datetime): дата платежа
     card_number (str): последние 4 цифры номера карты
@@ -170,6 +176,8 @@ def read_transactions_from_excel(file_path: str = "data/operations.xlsx") -> Lis
     - Числовые значения конвертируются в Decimal
     - При ошибках в отдельных строках они пропускаются с выводом сообщения
     """
+    logger.info("Выполнение read_transactions_from_excel")
+
     try:
         # Получаем путь к корню проекта
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -229,17 +237,20 @@ def read_transactions_from_excel(file_path: str = "data/operations.xlsx") -> Lis
                 transactions.append(transaction)
 
             except Exception as e:
-                print(f"Ошибка при обработке строки: {row}. Причина: {str(e)}")
+                logger.error(f"Ошибка при обработке строки: {row}. Причина: {str(e)}")
+                # print(f"Ошибка при обработке строки: {row}. Причина: {str(e)}")
                 continue
 
         return transactions
 
     except FileNotFoundError:
-        print(f"Ошибка: файл {file_path} не найден")
+        logger.error(f"Ошибка: файл {file_path} не найден")
+        # print(f"Ошибка: файл {file_path} не найден")
         return []
 
     except Exception as e:
-        print(f"Произошла ошибка при чтении файла: {str(e)}")
+        logger.error(f"Произошла ошибка при чтении файла: {str(e)}")
+        # print(f"Произошла ошибка при чтении файла: {str(e)}")
         return []
 
 
@@ -273,6 +284,8 @@ def read_user_settings_json(user_settings_json: str) -> dict:
     Файл должен быть валидным JSON-документом. При некорректном формате файла
     произойдет ошибка парсинга и будет возвращен пустой список.
     """
+    logger.info("Выполнение read_user_settings_json")
+
     try:
         # Получаем путь к корню проекта
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -288,11 +301,13 @@ def read_user_settings_json(user_settings_json: str) -> dict:
         return user_settings
 
     except FileNotFoundError:
-        print(f"Ошибка: файл {full_path} не найден")
+        logger.error(f"Ошибка: файл {full_path} не найден")
+        # print(f"Ошибка: файл {full_path} не найден")
         return []
 
     except Exception as e:
-        print(f"Произошла ошибка при чтении файла: {str(e)}")
+        logger.error(f"Произошла ошибка при чтении файла: {str(e)}")
+        # print(f"Произошла ошибка при чтении файла: {str(e)}")
         return []
 
 
@@ -322,6 +337,8 @@ def get_greeting(date: datetime) -> str:
     Обработка ошибок:
     Если передан объект неверного типа (не datetime), возвращается сообщение об ошибке.
     """
+    logger.info("Выполнение get_greeting")
+
     try:
         # Получаем час из объекта datetime
         hour = date.hour
@@ -336,6 +353,7 @@ def get_greeting(date: datetime) -> str:
             return "Доброй ночи"
 
     except AttributeError:
+        logger.error(f"Ошибка: передан неверный тип данных. Ожидается объект datetime")
         return "Ошибка: передан неверный тип данных. Ожидается объект datetime"
 
 
@@ -368,6 +386,8 @@ def get_transactions_filtered(transactions_full: List[Dict], target_datetime: Un
     - Если transaction_date не является объектом Timestamp, транзакция пропускается
     - При возникновении ошибок KeyError или ValueError выводится сообщение об ошибке
     """
+    logger.info("Выполнение get_transactions_filtered")
+
     # Обработка случая, когда transactions_full равен None
     if transactions_full is None:
         return []
@@ -377,7 +397,8 @@ def get_transactions_filtered(transactions_full: List[Dict], target_datetime: Un
         try:
             target_datetime = Timestamp(target_datetime)
         except Exception as e:
-            print(f"Ошибка при преобразовании даты: {e}")
+            logger.error(f"Ошибка при преобразовании даты: {e}")
+            # print(f"Ошибка при преобразовании даты: {e}")
             return []
 
     # Получаем первый день месяца для указанной даты
@@ -398,7 +419,8 @@ def get_transactions_filtered(transactions_full: List[Dict], target_datetime: Un
                 filtered_transactions.append(transaction)
 
         except Exception as e:
-            print(f"Ошибка при обработке транзакции: {e}")
+            logger.error(f"Ошибка при обработке транзакции: {e}")
+            # print(f"Ошибка при обработке транзакции: {e}")
 
     return filtered_transactions
 
@@ -447,6 +469,8 @@ def get_cards_data(transactions_filtered: List[Dict]) -> List[Dict]:
         ...
     ]
     """
+    logger.info("Выполнение get_cards_data")
+
     # Создаем словарь для хранения результатов по картам
     result = {}
 
@@ -468,6 +492,7 @@ def get_cards_data(transactions_filtered: List[Dict]) -> List[Dict]:
             try:
                 # Добавлена проверка на None
                 if transaction["transaction_amount"] is None:
+                    logger.error(f"Значение транзакции None")
                     raise ValueError("Значение транзакции None")
 
                 # Преобразование в Decimal осталось прежним
@@ -476,10 +501,12 @@ def get_cards_data(transactions_filtered: List[Dict]) -> List[Dict]:
 
                 # Добавлена проверка на отрицательные значения
                 if transaction_amount < 0 or cashback_amount < 0:
+                    logger.error(f"Отрицательные значения")
                     raise ValueError("Отрицательные значения")
 
             except (ValueError, TypeError, InvalidOperation):  # Расширен список исключений
-                print(f"Ошибка преобразования данных для карты {last_digits}")
+                logger.error(f"Ошибка преобразования данных для карты {last_digits}")
+                # print(f"Ошибка преобразования данных для карты {last_digits}")
                 continue
 
             # Если карта еще не в результатах, добавляем её
@@ -495,7 +522,8 @@ def get_cards_data(transactions_filtered: List[Dict]) -> List[Dict]:
             result[last_digits]["cashback"] += cashback_amount
 
         else:
-            print(f"строка {transaction} не содержит данных карты")
+            logger.error(f"строка {transaction} не содержит данных карты")
+            # print(f"строка {transaction} не содержит данных карты")
 
     # Преобразуем словарь в список
     return list(result.values())
@@ -541,6 +569,8 @@ def cards_data_to_json(cards_data: List[Dict]) -> List[Dict]:
         ...
     ]
     """
+    logger.info("Выполнение cards_data_to_json")
+
     # Создаем новый список для транзакций
     result = []
 
@@ -580,6 +610,8 @@ def get_top_transactions(transactions_filtered: List[Dict]) -> List[Dict]:
         'description': 'Покупка в магазине'
     }
     """
+    logger.info("Выполнение get_top_transactions")
+
     # Используем heapq.nlargest для получения топ-5 элементов
     transactions_top = heapq.nlargest(
         5,
@@ -591,8 +623,6 @@ def get_top_transactions(transactions_filtered: List[Dict]) -> List[Dict]:
 
 
 def timestamp_to_str(timestamp_date: Union[Timestamp, float, str]) -> str:
-# def timestamp_to_str(timestamp_date: Union[float, str]) -> str:
-# def timestamp_to_str(timestamp_date: Union[Timestamp, str]) -> str:
     """
     Преобразует временную метку (timestamp) в строку в формате даты.
 
@@ -615,11 +645,13 @@ def timestamp_to_str(timestamp_date: Union[Timestamp, float, str]) -> str:
             timestamp_date = float(timestamp_date)
             datetime_obj = datetime.fromtimestamp(timestamp_date)
         except ValueError:
+            logger.error(f"Некорректный формат timestamp")
             raise ValueError("Некорректный формат timestamp")
     # Обработка float значений
     elif isinstance(timestamp_date, (float, int)):  # добавили поддержку int для нулевого timestamp
         datetime_obj = datetime.fromtimestamp(timestamp_date)
     else:
+        logger.error(f"Неподдерживаемый тип данных")
         raise ValueError("Неподдерживаемый тип данных")
 
     formatted_date = datetime_obj.strftime('%d.%m.%Y')
@@ -667,6 +699,8 @@ def top_transactions_to_json(top_transactions: List[Dict]) -> List[Dict]:
         }
     ]
     """
+    logger.info("Выполнение top_transactions_to_json")
+
     # Создаем новый список для транзакций
     result = []
 
@@ -728,6 +762,7 @@ dotenv_path = Path('.env')
 
 API_KEY_EXCHANGE_RATES = os.getenv("API_KEY_EXCHANGE_RATES")
 if not API_KEY_EXCHANGE_RATES:
+    logger.error(f"API ключ не найден!")
     raise ValueError("API ключ не найден!")
 
 # # Выводим отладочную информацию
@@ -762,6 +797,8 @@ def get_currency_rates(user_currencies: list) -> list:
       в результат будет записан статус с доступным значением
     - Все курсы округляются до 2 знаков после запятой
     """
+    logger.info("Выполнение get_currency_rates")
+
     # Создаем список для хранения результатов по валютам
     result = []
     rate = "1.0"
@@ -792,7 +829,8 @@ def get_currency_rates(user_currencies: list) -> list:
             # # Выводим отладочную информацию
             # print(f"amount = {amount}")
         else:
-            print("Предупреждение: операция без result")
+            logger.warning(f"Предупреждение: операция без result")
+            # print("Предупреждение: операция без result")
 
         # Получаем статус-код из ответа и выводим его на экран
         status_code = response.status_code
@@ -807,7 +845,8 @@ def get_currency_rates(user_currencies: list) -> list:
             # print(f"Содержимое сайта:\n{content}")
         else:
             # Выводим сообщение об ошибке
-            print(f"Запрос не был успешным. Возможная причина: {response.reason}")
+            logger.error(f"Запрос не был успешным. Возможная причина: {response.reason}")
+            # print(f"Запрос не был успешным. Возможная причина: {response.reason}")
 
         # Создаем новый список с нужными полями
         # Добавляем проверку на наличие amount
@@ -828,6 +867,7 @@ def get_currency_rates(user_currencies: list) -> list:
 
 API_KEY_STOCK_PRICES = os.getenv("API_KEY_STOCK_PRICES")
 if not API_KEY_STOCK_PRICES:
+    logger.error(f"API ключ не найден!")
     raise ValueError("API ключ не найден!")
 
 # # Выводим отладочную информацию
@@ -883,6 +923,8 @@ def get_stock_prices(user_stocks: list) -> dict:
     - В случае отсутствия цены для конкретного тикера, выводится предупреждение
     - Проверяется статус-код ответа (ожидается 200)
     """
+    logger.info("Выполнение get_stock_prices")
+
     # Создаем список для хранения результатов по валютам
     result = []
 
@@ -911,12 +953,14 @@ def get_stock_prices(user_stocks: list) -> dict:
                 # # Выводим отладочную информацию
                 # print(f"price in 'if' = {price}")
             else:
+                logger.warning(f"Предупреждение: операция без price")
                 print("Предупреждение: операция без price")
                 continue
 
         else:
             # Если ответ в формате словаря (ошибка API)
             if "error" in data:
+                logger.error(f"Ошибка API: {data['error']}")
                 print(f"Ошибка API: {data['error']}")
                 continue
             else:
@@ -945,7 +989,8 @@ def get_stock_prices(user_stocks: list) -> dict:
                 result.append(stock_prices)
         else:
             # Выводим сообщение об ошибке
-            print(f"Запрос не был успешным. Возможная причина: {response.reason}")
+            logger.error(f"Запрос не был успешным. Возможная причина: {response.reason}")
+            # print(f"Запрос не был успешным. Возможная причина: {response.reason}")
 
 
 

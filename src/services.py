@@ -1,9 +1,15 @@
 # Реализуйте сервисы в отдельном модуле services.py
 import pandas as pd
+import logging
+from config import setup_logger
 from decimal import Decimal
 from typing import List, Dict
 from datetime import datetime
 from src.utils import read_transactions_from_excel
+
+# Создаем логгер один раз для всего модуля
+setup_logger()
+logger = logging.getLogger(__name__)  # __name__ автоматически содержит имя модуля
 
 
 def investment_bank(
@@ -51,7 +57,8 @@ def investment_bank(
                 filtered_transactions.append(transaction)
 
         except Exception as e:
-            print(f"Ошибка обработки транзакции {transaction}: {str(e)}")
+            logger.error(f"Ошибка обработки транзакции {transaction}: {str(e)}")
+            # print(f"Ошибка обработки транзакции {transaction}: {str(e)}")
 
     # Функция округления суммы
     def round_to_limit(amount: Decimal, limit: Decimal) -> Decimal:
@@ -103,4 +110,5 @@ if __name__ == "__main__":
     coin_limit_decimal = Decimal(str(coin_limit))
 
     result = investment_bank(transactions_full, coin_month, coin_limit_decimal)
-    print(f"\nСумма в инвесткопилке (лимит: ₽ {coin_limit}, период: {coin_month}): ₽ {result}")  # Вывод: ₽ 54.00
+    logger.info(f"\nСумма в инвесткопилке (лимит: ₽ {coin_limit}, период: {coin_month}): ₽ {result}")  # Вывод: ₽ 54.00
+    # print(f"\nСумма в инвесткопилке (лимит: ₽ {coin_limit}, период: {coin_month}): ₽ {result}")  # Вывод: ₽ 54.00

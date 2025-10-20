@@ -2,6 +2,7 @@
 import os
 import json
 import logging
+from config import setup_logger
 import datetime
 from typing import Callable, Any, Optional
 import pandas as pd
@@ -28,6 +29,9 @@ def report_saver(filename: Optional[str] = None):
         return wrapper
     return decorator
 
+# Создаем логгер один раз для всего модуля
+setup_logger()
+logger = logging.getLogger(__name__)  # __name__ автоматически содержит имя модуля
 
 # Использование декоратора
 @report_saver()  # Без параметра - используем имя по умолчанию
@@ -113,7 +117,11 @@ input_data = "2021-12-31"
 
 result = spending_by_workday(df, input_data)
 
-print(f"\nДата начала периода отчета (переданная дата): {input_data}")
-print("Группируем по типу дня и считаем средние траты...")
-print("Выводим средние траты в рабочий и в выходной день за последние три месяца (от переданной даты):")
-print(result)
+logger.info(f"\nДата начала периода отчета (переданная дата): {input_data}")
+logger.info("Группируем по типу дня и считаем средние траты...")
+logger.info("Выводим средние траты в рабочий и в выходной день за последние три месяца (от переданной даты):")
+logger.info(result)
+# print(f"\nДата начала периода отчета (переданная дата): {input_data}")
+# print("Группируем по типу дня и считаем средние траты...")
+# print("Выводим средние траты в рабочий и в выходной день за последние три месяца (от переданной даты):")
+# print(result)
