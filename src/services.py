@@ -1,6 +1,9 @@
 # Реализуйте сервисы в отдельном модуле services.py
 import pandas as pd
 import logging
+
+from pandas.io.formats.format import return_docstring
+
 from config import setup_logger
 from decimal import Decimal
 from typing import List, Dict
@@ -84,7 +87,9 @@ def investment_bank(
 
 
 # Пример использования
-if __name__ == "__main__":
+# if __name__ == "__main__":
+def services_page():
+    """ """
     # Считываем транзакции из файла xlsx в список
     transactions_full = read_transactions_from_excel("data/operations.xlsx")
     # # Создаем тестовые данные
@@ -112,3 +117,5 @@ if __name__ == "__main__":
     result = investment_bank(transactions_full, coin_month, coin_limit_decimal)
     logger.info(f"\nСумма в инвесткопилке (лимит: {coin_limit} руб., период: {coin_month}): {result} руб.")  # Вывод для тестовых данных: ₽ 54.00
     # print(f"\nСумма в инвесткопилке (лимит: ₽ {coin_limit}, период: {coin_month}): ₽ {result}")  # Вывод для тестовых данных: ₽ 54.00
+
+    return
