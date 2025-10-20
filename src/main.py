@@ -1,8 +1,6 @@
 
 import logging
 from config import setup_logger
-from decimal import Decimal
-from src.utils import read_transactions_from_excel
 from src.views import views_page
 from src.services import services_page
 from src.reports import reports_page
