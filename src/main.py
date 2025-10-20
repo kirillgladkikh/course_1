@@ -1,7 +1,6 @@
-# Тестовая функция
-def test_function():
-    logger.debug("Это тестовое сообщение")
+def main():
+    setup_logger()  # Инициализируем логгер один раз
+    # Запуск приложения
 
-# Вызов функции
 if __name__ == "__main__":
-    test_function()
+    main()

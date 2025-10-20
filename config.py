@@ -5,6 +5,9 @@ def setup_logger():
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
 
+    # Очищаем существующие обработчики
+    logger.handlers.clear()  # Добавляем эту строку
+
     # Создаем форматтер
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(funcName)s - %(levelname)s - %(message)s',

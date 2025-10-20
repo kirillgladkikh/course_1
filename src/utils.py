@@ -19,8 +19,6 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 
-# Создаем логгер один раз для всего модуля
-setup_logger()
 logger = logging.getLogger(__name__)  # __name__ автоматически содержит имя модуля
 
 
@@ -208,7 +206,7 @@ def read_transactions_from_excel(file_path: str = "data/operations.xlsx") -> Lis
         ]
 
         if not all(column in df.columns for column in required_columns):
-            # print(column)
+            logger.error("Файл Excel не содержит все необходимые столбцы")
             raise ValueError("Файл Excel не содержит все необходимые столбцы")
 
         transactions = []
@@ -480,10 +478,12 @@ def get_cards_data(transactions_filtered: List[Dict]) -> List[Dict]:
         # Игнорируем:
         # - строки без данных карт
         # - строки со статусом FAILED
+        # logger.debug(f'transaction["card_number"]: {transaction["card_number"]} {type(transaction["card_number"])}')
         # print(f'transaction["card_number"]: {transaction["card_number"]} {type(transaction["card_number"])}')
         if transaction["card_number"] != "" and transaction["transaction_status"] != "FAILED":
 
             # Извлекаем последние 4 цифры карты
+            # logger.debug(f'transaction["card_number"]: {transaction["card_number"]} {type(transaction["card_number"])}')
             # print(f'transaction["card_number"]: {transaction["card_number"]} {type(transaction["card_number"])}')
             card_number = transaction["card_number"]
             last_digits = card_number[-4:]  # Берем последние 4 символа
@@ -522,7 +522,7 @@ def get_cards_data(transactions_filtered: List[Dict]) -> List[Dict]:
             result[last_digits]["cashback"] += cashback_amount
 
         else:
-            logger.error(f"строка {transaction} не содержит данных карты")
+            logger.warning(f"строка {transaction} не содержит данных карты")
             # print(f"строка {transaction} не содержит данных карты")
 
     # Преобразуем словарь в список
@@ -707,7 +707,6 @@ def top_transactions_to_json(top_transactions: List[Dict]) -> List[Dict]:
     for transaction in top_transactions:
         # Создаем новый список с нужными полями
         top_transaction = {
-            # "date": transaction["transaction_date"],  # convert_timestamp_to_date(transaction["transaction_date"]),  #.strftime('%Y-%m-%d') if transaction["transaction_date"] else "",
             "date": timestamp_to_str(transaction["transaction_date"]),
             "amount": round(float(transaction["transaction_amount"]), 2),
             "category": transaction["transaction_category"],
@@ -717,26 +716,6 @@ def top_transactions_to_json(top_transactions: List[Dict]) -> List[Dict]:
         result.append(top_transaction)
 
     return result
-
-
-# def get_top_transactions_test() -> List[Dict]:
-#     # Пример данных с Decimal
-#     transactions_sample = [
-#         {'id': 1, 'payment_amount': Decimal('100.50')},
-#         {'id': 2, 'payment_amount': Decimal('200.75')},
-#         {'id': 3, 'payment_amount': Decimal('150.25')},
-#         {'id': 4, 'payment_amount': Decimal('300.00')},
-#         {'id': 5, 'payment_amount': Decimal('250.99')}
-#     ]
-#
-#     # Использование heapq.nlargest с Decimal
-#     top_transactions = heapq.nlargest(
-#         5,
-#         transactions_sample,
-#         key=lambda x: x['payment_amount']
-#     )
-#
-#     return top_transactions
 
 
 # API
@@ -749,6 +728,7 @@ def top_transactions_to_json(top_transactions: List[Dict]) -> List[Dict]:
 # Курсы валют (валюты берем из файла user_settings.json)
 # Получаем текущую рабочую директорию
 current_dir = Path().resolve()
+logger.debug(f"\nТекущая директория: {current_dir}")
 # print(f"\nТекущая директория: {current_dir}")
 
 # load_dotenv(".env")
@@ -766,6 +746,9 @@ if not API_KEY_EXCHANGE_RATES:
     raise ValueError("API ключ не найден!")
 
 # # Выводим отладочную информацию
+logger.debug(f"load_dotenv() = {load_dotenv()}")
+logger.debug(f"dotenv_path = {dotenv_path}")
+logger.debug(f"===API_KEY_EXCHANGE_RATES = {API_KEY_EXCHANGE_RATES}")
 # print(f"load_dotenv() = {load_dotenv()}")
 # print(f"dotenv_path = {dotenv_path}")
 # print(f"===API_KEY_EXCHANGE_RATES = {API_KEY_EXCHANGE_RATES}")
@@ -817,6 +800,8 @@ def get_currency_rates(user_currencies: list) -> list:
         data = response.json()  # Преобразуем ответ в словарь
 
         # # Выводим отладочную информацию
+        logger.debug(f"url = {url}")
+        logger.debug(f"data = response.json() = {data}")
         # print(f"url = {url}")
         # print(f"data = response.json() = {data}")
 
@@ -827,6 +812,7 @@ def get_currency_rates(user_currencies: list) -> list:
             # Извлекаем из API-запроса обменный курс
             amount = data["result"]
             # # Выводим отладочную информацию
+            logger.debug(f"amount = {amount}")
             # print(f"amount = {amount}")
         else:
             logger.warning(f"Предупреждение: операция без result")
@@ -835,6 +821,7 @@ def get_currency_rates(user_currencies: list) -> list:
         # Получаем статус-код из ответа и выводим его на экран
         status_code = response.status_code
         # # Выводим отладочную информацию
+        logger.debug(f"Статус код: {status_code}")
         # print(f"Статус код: {status_code}")
 
         # Проверяем, равен ли статус-код 200, то есть чтобы запрос был успешным
@@ -842,6 +829,7 @@ def get_currency_rates(user_currencies: list) -> list:
             # Выводим содержимое сайта на экран
             content = response.text
             # # Выводим отладочную информацию
+            logger.debug(f"Содержимое сайта:\n{content}")
             # print(f"Содержимое сайта:\n{content}")
         else:
             # Выводим сообщение об ошибке
@@ -858,6 +846,7 @@ def get_currency_rates(user_currencies: list) -> list:
             result.append(currency_rates)
 
         # # Выводим отладочную информацию
+        logger.debug(result)
         # print(result)
 
     return result
@@ -871,6 +860,7 @@ if not API_KEY_STOCK_PRICES:
     raise ValueError("API ключ не найден!")
 
 # # Выводим отладочную информацию
+logger.debug(f"===API_KEY_STOCK_PRICES = {API_KEY_STOCK_PRICES}")
 # print(f"===API_KEY_STOCK_PRICES = {API_KEY_STOCK_PRICES}")
 
 
@@ -938,6 +928,10 @@ def get_stock_prices(user_stocks: list) -> dict:
         data = response.json()  # Преобразуем ответ в словарь
 
         # # Выводим отладочную информацию
+        logger.debug(f"url_w_apikey = {url_with_apikey}")
+        logger.debug(f"response = {response}")
+        logger.debug(f"response.json() = {response.json()}")
+        logger.debug(f"data = {data}")
         # print(f"url_w_apikey = {url_with_apikey}")
         # print(f"response = {response}")
         # print(f"response.json() = {response.json()}")
@@ -951,6 +945,7 @@ def get_stock_prices(user_stocks: list) -> dict:
                 price = data[0]['price']  # получаем значение price
 
                 # # Выводим отладочную информацию
+                logger.debug(f"price in 'if' = {price}")
                 # print(f"price in 'if' = {price}")
             else:
                 logger.warning(f"Предупреждение: операция без price")
@@ -970,13 +965,14 @@ def get_stock_prices(user_stocks: list) -> dict:
         status_code = response.status_code
 
         # # Выводим отладочную информацию
+        logger.debug(f"Статус код: {status_code}")
         # print(f"Статус код: {status_code}")
 
         # Проверяем, равен ли статус-код 200, то есть чтобы запрос был успешным
         if status_code == 200:
-            # # Выводим отладочную информацию
-            # Выводим содержимое сайта на экран
-            # content = response.text
+            # Выводим отладочную информацию
+            content = response.text
+            logger.debug(f"Содержимое сайта:\n{content}")
             # print(f"Содержимое сайта:\n{content}")
 
             # Создаем новый список с нужными полями
@@ -994,7 +990,8 @@ def get_stock_prices(user_stocks: list) -> dict:
 
 
 
-        # # Выводим отладочную информацию
+        # Выводим отладочную информацию
+        logger.debug(result)
         # print(result)
 
     return result

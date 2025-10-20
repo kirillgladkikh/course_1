@@ -8,7 +8,7 @@ from datetime import datetime
 from src.utils import read_transactions_from_excel
 
 # Создаем логгер один раз для всего модуля
-setup_logger()
+setup_logger()  # ======================================================================================================
 logger = logging.getLogger(__name__)  # __name__ автоматически содержит имя модуля
 
 
@@ -46,11 +46,11 @@ def investment_bank(
             formatted_date = datetime_obj.strftime('%Y-%m')
 
             # # Выводим отладочную информацию
-            # print(f"Исходная дата: {transaction_date}")
-            # print(f"Преобразованная дата: {datetime_obj}")
-            # print(f"Форматированная дата: {formatted_date}")
-            # print(f"Целевой месяц: {month}")
-            # print("-" * 40)
+            # logger.debug(f"Исходная дата: {transaction_date}")
+            # logger.debug(f"Преобразованная дата: {datetime_obj}")
+            # logger.debug(f"Форматированная дата: {formatted_date}")
+            # logger.debug(f"Целевой месяц: {month}")
+            # logger.debug("-" * 40)
 
             # Сравниваем с целевым месяцем
             if formatted_date == month:
@@ -110,5 +110,5 @@ if __name__ == "__main__":
     coin_limit_decimal = Decimal(str(coin_limit))
 
     result = investment_bank(transactions_full, coin_month, coin_limit_decimal)
-    logger.info(f"\nСумма в инвесткопилке (лимит: ₽ {coin_limit}, период: {coin_month}): ₽ {result}")  # Вывод: ₽ 54.00
-    # print(f"\nСумма в инвесткопилке (лимит: ₽ {coin_limit}, период: {coin_month}): ₽ {result}")  # Вывод: ₽ 54.00
+    logger.info(f"\nСумма в инвесткопилке (лимит: {coin_limit} руб., период: {coin_month}): {result} руб.")  # Вывод для тестовых данных: ₽ 54.00
+    # print(f"\nСумма в инвесткопилке (лимит: ₽ {coin_limit}, период: {coin_month}): ₽ {result}")  # Вывод для тестовых данных: ₽ 54.00
