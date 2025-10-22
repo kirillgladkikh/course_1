@@ -28,7 +28,7 @@ def mock_requests_get(*args, **kwargs):
 
 
 @patch('requests.get', side_effect=mock_requests_get)
-def test_get_currency_rates(mock_get):
+def test_get_currency_rates(mock_get) -> None:
     result = get_currency_rates(test_currencies)
     assert len(result) == 2
     usd_rate = result[0]
@@ -40,7 +40,7 @@ def test_get_currency_rates(mock_get):
 
 
 @patch('requests.get')
-def test_get_currency_rates_error(mock_get):
+def test_get_currency_rates_error(mock_get) -> None:
     mock_response = Mock()
     mock_response.status_code = 500
     mock_response.json.return_value = {'error': 'Internal Server Error'}
@@ -51,7 +51,7 @@ def test_get_currency_rates_error(mock_get):
 
 
 @patch('requests.get')
-def test_get_currency_rates_invalid_currency(mock_get):
+def test_get_currency_rates_invalid_currency(mock_get) -> None:
     mock_response = Mock()
     mock_response.status_code = 404
     mock_response.json.return_value = {'error': 'Currency not found'}
@@ -62,13 +62,13 @@ def test_get_currency_rates_invalid_currency(mock_get):
 
 
 @patch('requests.get')
-def test_get_currency_rates_empty_list(mock_get):
+def test_get_currency_rates_empty_list(mock_get) -> None:
     result = get_currency_rates([])
     assert len(result) == 0
 
 
 @patch('requests.get')
-def test_get_currency_rates_single_currency(mock_get):
+def test_get_currency_rates_single_currency(mock_get) -> None:
     mock_response = Mock()
     mock_response.status_code = 200
     mock_response.json.return_value = {'result': 90.5678}

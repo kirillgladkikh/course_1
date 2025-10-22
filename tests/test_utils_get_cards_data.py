@@ -38,7 +38,7 @@ test_transactions = [
 ]
 
 
-def test_get_cards_data_basic():
+def test_get_cards_data_basic() -> None:
     result = get_cards_data(test_transactions)
     assert len(result) == 2  # должны пройти только 2 карты
 
@@ -53,12 +53,12 @@ def test_get_cards_data_basic():
     assert card2["cashback"] == Decimal('25.00')
 
 
-def test_get_cards_data_empty_list():
+def test_get_cards_data_empty_list() -> None:
     result = get_cards_data([])
     assert result == []
 
 
-def test_get_cards_data_single_transaction():
+def test_get_cards_data_single_transaction() -> None:
     single_transaction = [test_transactions[0]]
     result = get_cards_data(single_transaction)
     assert len(result) == 1
@@ -67,19 +67,19 @@ def test_get_cards_data_single_transaction():
     assert result[0]["cashback"] == Decimal('50.25')
 
 
-def test_get_cards_data_failed_transactions():
+def test_get_cards_data_failed_transactions() -> None:
     failed_transactions = [test_transactions[3]]
     result = get_cards_data(failed_transactions)
     assert result == []
 
 
-def test_get_cards_data_missing_card_number():
+def test_get_cards_data_missing_card_number() -> None:
     missing_card = [test_transactions[4]]
     result = get_cards_data(missing_card)
     assert result == []
 
 
-def test_get_cards_data_multiple_transactions_same_card():
+def test_get_cards_data_multiple_transactions_same_card() -> None:
     same_card_transactions = [
         {
             "card_number": "4111111111111111",
@@ -131,7 +131,7 @@ def test_get_cards_data_multiple_transactions_same_card():
 #     assert result[0]["last_digits"] == "2222"
 
 
-def test_get_cards_data_mixed_statuses():
+def test_get_cards_data_mixed_statuses() -> None:
     mixed_transactions = [
         {
             "card_number": "4111111111111111",
@@ -161,7 +161,7 @@ def test_get_cards_data_mixed_statuses():
 
 
 # ================================================
-def test_get_cards_data_invalid_amount():
+def test_get_cards_data_invalid_amount() -> None:
     invalid_transactions = [
         {
             "card_number": "4111111111111111",
@@ -189,7 +189,7 @@ def test_get_cards_data_invalid_amount():
     assert result[0]["total_spent"] == Decimal('100.00')
     assert result[0]["cashback"] == Decimal('5.00')
 
-def test_get_cards_data_float_amount():
+def test_get_cards_data_float_amount() -> None:
     float_transactions = [
         {
             "card_number": "4111111111111111",

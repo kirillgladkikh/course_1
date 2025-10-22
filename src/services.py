@@ -1,9 +1,6 @@
 # Реализуйте сервисы в отдельном модуле services.py
 import pandas as pd
 import logging
-
-from pandas.io.formats.format import return_docstring
-
 from config import setup_logger
 from decimal import Decimal
 from typing import List, Dict
@@ -134,7 +131,7 @@ def investment_bank(
     return total_amount.quantize(Decimal('0.00'))
 
 
-def services_page():
+def services_page() -> None:
     """
     Формирует данные для страницы сервисов (в частности, расчёт суммы в «Инвесткопилке»).
 

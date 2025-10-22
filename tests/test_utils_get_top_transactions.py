@@ -44,7 +44,7 @@ transactions_data = [
 ]
 
 
-def test_top_transactions():
+def test_top_transactions() -> None:
     result = get_top_transactions(transactions_data)
     expected_amounts = [2500.00, 2000.00, 1500.00, 1000.00, 500.00]
 
@@ -56,7 +56,7 @@ def test_top_transactions():
         assert transaction['payment_amount'] == expected_amounts[i]
 
 
-def test_less_than_five_transactions():
+def test_less_than_five_transactions() -> None:
     # Берем первые 3 элемента из тестовых данных
     small_data = transactions_data[:3]
 
@@ -78,12 +78,12 @@ def test_less_than_five_transactions():
     assert result[2]['payment_amount'] == 1000.00  # Третья по величине
 
 
-def test_empty_list():
+def test_empty_list() -> None:
     result = get_top_transactions([])
     assert result == []
 
 
-def test_equal_amounts():
+def test_equal_amounts() -> None:
     equal_data = [
         {
             'transaction_id': '1',

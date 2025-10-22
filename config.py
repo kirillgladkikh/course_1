@@ -1,7 +1,7 @@
 import logging
 
 
-def setup_logger():
+def setup_logger() -> None:
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
 

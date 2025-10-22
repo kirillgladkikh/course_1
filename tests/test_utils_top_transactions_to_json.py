@@ -26,7 +26,7 @@ test_transactions = [
 ]
 
 
-def test_top_transactions_to_json():
+def test_top_transactions_to_json() -> None:
     # Базовый тест с несколькими транзакциями
     result = top_transactions_to_json(test_transactions)
 
@@ -49,13 +49,13 @@ def test_top_transactions_to_json():
     assert result[2]["amount"] == 0.99
 
 
-def test_empty_list():
+def test_empty_list() -> None:
     # Тест с пустым списком
     result = top_transactions_to_json([])
     assert result == []
 
 
-def test_single_transaction():
+def test_single_transaction() -> None:
     # Тест с одной транзакцией
     single_transaction = [
         {
@@ -72,7 +72,7 @@ def test_single_transaction():
     assert result[0]["amount"] == 100.00
 
 
-def test_zero_amount():
+def test_zero_amount() -> None:
     # Тест с нулевой суммой
     zero_amount_transaction = [
         {
@@ -87,7 +87,7 @@ def test_zero_amount():
     assert result[0]["amount"] == 0.00
 
 
-def test_invalid_amount():
+def test_invalid_amount() -> None:
     # Тест с некорректной суммой
     invalid_amount_transaction = [
         {

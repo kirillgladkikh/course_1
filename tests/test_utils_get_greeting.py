@@ -3,7 +3,7 @@ from datetime import datetime, time
 from src.utils import get_greeting
 
 
-def test_get_greeting_morning():
+def test_get_greeting_morning() -> None:
     # Проверяем утреннее время
     test_time = datetime(2025, 10, 18, 5, 0)  # 05:00
     assert get_greeting(test_time) == "Доброе утро"
@@ -12,7 +12,7 @@ def test_get_greeting_morning():
     assert get_greeting(test_time) == "Доброе утро"
 
 
-def test_get_greeting_day():
+def test_get_greeting_day() -> None:
     # Проверяем дневное время
     test_time = datetime(2025, 10, 18, 12, 0)  # 12:00
     assert get_greeting(test_time) == "Добрый день"
@@ -21,7 +21,7 @@ def test_get_greeting_day():
     assert get_greeting(test_time) == "Добрый день"
 
 
-def test_get_greeting_evening():
+def test_get_greeting_evening() -> None:
     # Проверяем вечернее время
     test_time = datetime(2025, 10, 18, 18, 0)  # 18:00
     assert get_greeting(test_time) == "Добрый вечер"
@@ -30,7 +30,7 @@ def test_get_greeting_evening():
     assert get_greeting(test_time) == "Добрый вечер"
 
 
-def test_get_greeting_night():
+def test_get_greeting_night() -> None:
     # Проверяем ночное время
     test_time = datetime(2025, 10, 18, 23, 0)  # 23:00
     assert get_greeting(test_time) == "Доброй ночи"
@@ -39,14 +39,14 @@ def test_get_greeting_night():
     assert get_greeting(test_time) == "Доброй ночи"
 
 
-def test_get_greeting_invalid_type():
+def test_get_greeting_invalid_type() -> None:
     # Проверяем обработку неверного типа данных
     assert get_greeting("неверное значение") == "Ошибка: передан неверный тип данных. Ожидается объект datetime"
     assert get_greeting(12345) == "Ошибка: передан неверный тип данных. Ожидается объект datetime"
     assert get_greeting([1, 2, 3]) == "Ошибка: передан неверный тип данных. Ожидается объект datetime"
 
 
-def test_get_greeting_edge_cases():
+def test_get_greeting_edge_cases() -> None:
     # Проверяем граничные случаи
     test_time = datetime(2025, 10, 18, 4, 59)  # 04:59 - ночь
     assert get_greeting(test_time) == "Доброй ночи"

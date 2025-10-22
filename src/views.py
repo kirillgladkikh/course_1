@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)  # __name__ автоматически со
 logger.info("Выполнение КОДА МОДУЛЯ views.py")
 
 
-def views_page():
+def views_page() -> None:
     """
     Формирует JSON-ответ для главной страницы пользовательского интерфейса.
 

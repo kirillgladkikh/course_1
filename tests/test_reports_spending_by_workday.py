@@ -6,7 +6,7 @@ from src.reports import spending_by_workday
 
 
 # Тест 1: Только рабочие дни
-def test_only_weekdays():
+def test_only_weekdays() -> None:
     # Создаем тестовые данные с правильными рабочими днями
     weekday_df = pd.DataFrame({
         'Дата операции': [
@@ -63,7 +63,7 @@ def test_only_weekdays():
 
 
 # Тест 2: Только выходные дни
-def test_only_weekends():
+def test_only_weekends() -> None:
     # Создаем тестовые данные с датами, которые точно попадут в период
     weekend_df = pd.DataFrame({
         'Дата операции': [
@@ -115,7 +115,7 @@ def test_only_weekends():
 
 
 # Тест 3: Смешанные дни
-def test_mixed_days():
+def test_mixed_days() -> None:
     # Создаем тестовые данные с датами, которые точно попадут в период
     mixed_df = pd.DataFrame({
         'Дата операции': [
@@ -170,7 +170,7 @@ def test_mixed_days():
 
 
 # Тест 4: Пустые данные
-def test_empty_data():
+def test_empty_data() -> None:
     empty_df = pd.DataFrame(columns=['Дата операции', 'Сумма платежа'])
 
     expected = pd.DataFrame({

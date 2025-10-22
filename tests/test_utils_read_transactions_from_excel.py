@@ -22,13 +22,13 @@ from src.utils import read_transactions_from_excel
 #     assert isinstance(first_transaction["card_number"], str)
 
 
-def test_read_transactions_from_excel_missing_file():
+def test_read_transactions_from_excel_missing_file() -> None:
     # Проверяем обработку отсутствующего файла
     result = read_transactions_from_excel("non_existent_file.xlsx")
     assert result == []
 
 
-def test_read_transactions_from_excel_missing_columns():
+def test_read_transactions_from_excel_missing_columns() -> None:
     import pandas as pd
     import os
     from pathlib import Path
@@ -77,7 +77,7 @@ def test_read_transactions_from_excel_missing_columns():
             os.remove(test_file_path)
 
 
-def test_read_transactions_from_excel_empty_file():
+def test_read_transactions_from_excel_empty_file() -> None:
     # Создаем пустой DataFrame
     import pandas as pd
 
@@ -89,7 +89,7 @@ def test_read_transactions_from_excel_empty_file():
     assert result == []
 
 
-def test_read_transactions_from_excel_invalid_data():
+def test_read_transactions_from_excel_invalid_data() -> None:
     # Создаем файл с некорректными данными
     import pandas as pd
 
@@ -105,7 +105,7 @@ def test_read_transactions_from_excel_invalid_data():
     assert len(result) == 0  # Все строки должны быть пропущены из-за ошибок
 
 
-def test_read_transactions_from_excel_correct_types():
+def test_read_transactions_from_excel_correct_types() -> None:
     # Создаем файл с корректными данными
     import pandas as pd
 

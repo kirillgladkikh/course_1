@@ -24,7 +24,7 @@ test_transactions = [
 ]
 
 
-def test_investment_bank_basic():
+def test_investment_bank_basic() -> None:
     # Базовый тест с лимитом 50
     # Расчёт:
     # 1712.00 → 1750.00 (разница 38.00)
@@ -39,7 +39,7 @@ def test_investment_bank_basic():
     assert result == Decimal('54.00')
 
 
-def test_investment_bank_limit_10():
+def test_investment_bank_limit_10() -> None:
     # Тест с лимитом 10
     # Расчёт:
     # 1712.00 → 1720.00 (разница 8.00)
@@ -54,7 +54,7 @@ def test_investment_bank_limit_10():
     assert result == Decimal('14.00')  # Исправлено ожидаемое значение
 
 
-def test_investment_bank_limit_100():
+def test_investment_bank_limit_100() -> None:
     # Тест с лимитом 100
     # Расчёт:
     # 1712.00 → 1800.00 (разница 88.00)
@@ -69,7 +69,7 @@ def test_investment_bank_limit_100():
     assert result == Decimal('154.00')
 
 
-def test_investment_bank_empty_month():
+def test_investment_bank_empty_month() -> None:
     # Тест с пустым месяцем
     result = investment_bank(
         transactions=test_transactions,
@@ -78,7 +78,7 @@ def test_investment_bank_empty_month():
     )
     assert result == Decimal('0.00')
 
-def test_investment_bank_single_transaction():
+def test_investment_bank_single_transaction() -> None:
     # Тест с одной транзакцией
     single_transaction = [
         {
@@ -93,7 +93,7 @@ def test_investment_bank_single_transaction():
     )
     assert result == Decimal('3.00')
 
-def test_investment_bank_exact_limit():
+def test_investment_bank_exact_limit() -> None:
     # Тест с суммой, кратной лимиту
     exact_transaction = [
         {
@@ -108,7 +108,7 @@ def test_investment_bank_exact_limit():
     )
     assert result == Decimal('0.00')
 
-def test_investment_bank_decimal_amount():
+def test_investment_bank_decimal_amount() -> None:
     # Тест с десятичной суммой
     decimal_transaction = [
         {

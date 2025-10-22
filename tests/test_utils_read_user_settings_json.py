@@ -16,7 +16,7 @@ TEST_SETTINGS = {
 }
 
 
-def test_read_user_settings_json_valid_file():
+def test_read_user_settings_json_valid_file() -> None:
     # Создаем временный тестовый файл
     test_file = Path("tests/data/test_settings.json")
     with open(test_file, 'w', encoding='utf-8') as f:
@@ -36,13 +36,13 @@ def test_read_user_settings_json_valid_file():
             os.remove(test_file)
 
 
-def test_read_user_settings_json_missing_file():
+def test_read_user_settings_json_missing_file() -> None:
     # Проверяем обработку отсутствующего файла
     result = read_user_settings_json("non_existent_file.json")
     assert result == []
 
 
-def test_read_user_settings_json_invalid_json():
+def test_read_user_settings_json_invalid_json() -> None:
     # Создаем файл с некорректным JSON
     test_file = Path("tests/data/invalid_settings.json")
     with open(test_file, 'w', encoding='utf-8') as f:
@@ -58,7 +58,7 @@ def test_read_user_settings_json_invalid_json():
             os.remove(test_file)
 
 
-def test_read_user_settings_json_empty_file():
+def test_read_user_settings_json_empty_file() -> None:
     # Создаем пустой JSON файл
     test_file = Path("tests/data/empty_settings.json")
     with open(test_file, 'w', encoding='utf-8') as f:
@@ -74,7 +74,7 @@ def test_read_user_settings_json_empty_file():
             os.remove(test_file)
 
 
-def test_read_user_settings_json_correct_types():
+def test_read_user_settings_json_correct_types() -> None:
     # Создаем файл с корректными типами данных
     test_file = Path("tests/data/correct_types.json")
     test_data = {
