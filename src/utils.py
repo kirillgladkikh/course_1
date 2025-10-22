@@ -215,21 +215,21 @@ def read_transactions_from_excel(file_path: str = "data/operations.xlsx") -> Lis
             try:
                 # Преобразуем данные с учетом типов
                 transaction = {
-                    "transaction_date": pd.to_datetime(row["Дата операции"], dayfirst=True, errors='coerce'),  # type: datetime  # указываем, что день идет первым  # для некорректных дат вернет NaT
-                    "payment_date": pd.to_datetime(row["Дата платежа"], dayfirst=True, errors='coerce'),  # type: datetime  # указываем, что день идет первым  # для некорректных дат вернет NaT
-                    "card_number": "" if str(row["Номер карты"]) == "nan" else str(row["Номер карты"]),  # type: str
-                    "transaction_status": "" if str(row["Статус"]) == "nan" else str(row["Статус"]),  # type: str
-                    "transaction_amount": safe_convert(str(row["Сумма платежа"])),  # type: Decimal
-                    "transaction_currency": "" if str(row["Валюта операции"]) == "nan" else str(row["Валюта операции"]),  # type: str
-                    "payment_amount": safe_convert(str(row["Сумма платежа"])),  # type: Decimal
-                    "payment_currency": "" if str(row["Валюта платежа"]) == "nan" else str(row["Валюта платежа"]),  # type: str
-                    "cashback_amount": safe_convert(str(row["Кэшбэк"])),  # type: Decimal
-                    "transaction_category": "" if str(row["Категория"]) == "nan" else str(row["Категория"]),  # type: str
-                    "transaction_code": "" if str(row["MCC"]) == "nan" else str(row["MCC"]),  # type: str
-                    "transaction_description": "" if str(row["Описание"]) == "nan" else str(row["Описание"]),  # type: str
-                    "total_bonus": safe_convert(str(row["Бонусы (включая кэшбэк)"])),  # type: Decimal
-                    "invest_amount_rounded": safe_convert(str(row["Округление на инвесткопилку"])),  # type: Decimal
-                    "transaction_amount_rounded": safe_convert(str(row["Сумма операции с округлением"])),  # type: Decimal
+                    "transaction_date": pd.to_datetime(row["Дата операции"], dayfirst=True, errors='coerce'),  # type datetime указываем, что день идет первым. для некорректных дат вернет NaT
+                    "payment_date": pd.to_datetime(row["Дата платежа"], dayfirst=True, errors='coerce'),  # type datetime указываем, что день идет первым. для некорректных дат вернет NaT
+                    "card_number": "" if str(row["Номер карты"]) == "nan" else str(row["Номер карты"]),  # type str
+                    "transaction_status": "" if str(row["Статус"]) == "nan" else str(row["Статус"]),  # type str
+                    "transaction_amount": safe_convert(str(row["Сумма платежа"])),  # type Decimal
+                    "transaction_currency": "" if str(row["Валюта операции"]) == "nan" else str(row["Валюта операции"]),  # type str
+                    "payment_amount": safe_convert(str(row["Сумма платежа"])),  # type Decimal
+                    "payment_currency": "" if str(row["Валюта платежа"]) == "nan" else str(row["Валюта платежа"]),  # type str
+                    "cashback_amount": safe_convert(str(row["Кэшбэк"])),  # type Decimal
+                    "transaction_category": "" if str(row["Категория"]) == "nan" else str(row["Категория"]),  # type str
+                    "transaction_code": "" if str(row["MCC"]) == "nan" else str(row["MCC"]),  # type str
+                    "transaction_description": "" if str(row["Описание"]) == "nan" else str(row["Описание"]),  # type str
+                    "total_bonus": safe_convert(str(row["Бонусы (включая кэшбэк)"])),  # type Decimal
+                    "invest_amount_rounded": safe_convert(str(row["Округление на инвесткопилку"])),  # type Decimal
+                    "transaction_amount_rounded": safe_convert(str(row["Сумма операции с округлением"])),  # type Decimal
                 }
 
                 transactions.append(transaction)
