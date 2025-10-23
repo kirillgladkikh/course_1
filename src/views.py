@@ -4,10 +4,10 @@ import logging
 from config import setup_logger
 from datetime import datetime
 from pandas import Timestamp
+from typing import List, Dict, Union
 from decimal import Decimal
 from src.utils import read_transactions_from_excel, read_user_settings_json, get_transactions_filtered, get_greeting, get_cards_data, get_top_transactions, cards_data_to_json, top_transactions_to_json, get_currency_rates, get_stock_prices
-# from src.services import
-# from src.reports import
+
 
 # Создаем логгер один раз для всего модуля
 setup_logger()
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)  # __name__ автоматически со
 logger.info("Выполнение КОДА МОДУЛЯ views.py")
 
 
-def views_page() -> str:
+def views_page(input_data: Union[Timestamp, str] = Timestamp('2021-12-31 16:44:00')) -> str:
     """
     Формирует JSON-ответ для главной страницы пользовательского интерфейса.
 
@@ -96,7 +96,7 @@ def views_page() -> str:
     # print(f"transactions_full {len(transactions_full)} {type(transactions_full)}")
 
     # Получаем список транзакций для заданного диапазона дат
-    transactions_filtered= get_transactions_filtered(transactions_full, Timestamp('14.11.2021 14:46:24'))
+    transactions_filtered= get_transactions_filtered(transactions_full, input_data)  # Timestamp('14.11.2021 14:46:24')
     # 2021-12-31 16:44:00 - база
     # 24.08.2021 03:39:33 и 14.11.2021 14:46:24 - проверка FAILED;
 
