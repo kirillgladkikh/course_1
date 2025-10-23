@@ -11,9 +11,9 @@ import pandas as pd
 # Настройки логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def report_saver(filename: Optional[str] = None):
+def report_saver(filename: Optional[str] = None) -> Callable:
     def decorator(func: Callable) -> Callable:
-        def wrapper(*args, **kwargs) -> Any:
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             nonlocal filename
             result = func(*args, **kwargs)
             if filename is None:

@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import patch, Mock
 from src.utils import get_stock_prices
+from typing import Any, Dict, List, Union
 
 test_stocks = ['AAPL', 'GOOGL']
 
@@ -10,7 +11,7 @@ mock_response_data = {
 }
 
 
-def mock_requests_get(*args, **kwargs):
+def mock_requests_get(*args: Any, **kwargs: Any) -> Mock:
     mock_response = Mock()
     stock = args[0].split('symbol=')[1].split('&')[0]
 

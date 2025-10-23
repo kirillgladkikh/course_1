@@ -1,7 +1,9 @@
 import pytest
 from unittest.mock import patch, Mock
+from typing import Any, Dict, List, Union
 import requests
 from src.utils import get_currency_rates
+
 
 test_currencies = ['USD', 'EUR']
 
@@ -11,7 +13,7 @@ mock_response_data = {
 }
 
 
-def mock_requests_get(*args, **kwargs):
+def mock_requests_get(*args: Any, **kwargs: Any) -> Mock:
     mock_response = Mock()
     currency = args[0].split('from=')[1].split('&')[0]
 
