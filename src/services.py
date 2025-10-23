@@ -131,7 +131,7 @@ def investment_bank(
     return total_amount.quantize(Decimal('0.00'))
 
 
-def services_page() -> None:
+def services_page() -> str:
     """
     Формирует данные для страницы сервисов (в частности, расчёт суммы в «Инвесткопилке»).
 
@@ -198,4 +198,4 @@ def services_page() -> None:
     logger.info(f"\nСумма в инвесткопилке (лимит: {coin_limit} руб., период: {coin_month}): {result} руб.")  # Вывод для тестовых данных: ₽ 54.00
     # print(f"\nСумма в инвесткопилке (лимит: ₽ {coin_limit}, период: {coin_month}): ₽ {result}")  # Вывод для тестовых данных: ₽ 54.00
 
-    return
+    return str(result)

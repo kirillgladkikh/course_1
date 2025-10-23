@@ -11,14 +11,17 @@ logger = logging.getLogger(__name__)
 
 # ЗАПУСК views.py
 logger.info(f"ЗАПУСК views.py")
-views_page()
+views_page_json = views_page()
+print(views_page_json)
 
 # ЗАПУСК services.py
 logger.info(f"ЗАПУСК services.py")
-services_page()
+services_page_json = services_page()
+print(services_page_json)
 
 # ЗАПУСК reports.py
 logger.info(f"ЗАПУСК reports.py")
-reports_page()
+reports_page_json = reports_page()
+print(reports_page_json)
 
 

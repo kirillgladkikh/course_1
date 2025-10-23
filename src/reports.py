@@ -99,7 +99,7 @@ def spending_by_workday(transactions: pd.DataFrame,
 
 
 
-def reports_page() -> None:
+def reports_page() -> pd.DataFrame:
     """
     Генерирует отчёт о средних тратах в рабочие и выходные дни за последние три месяца
     относительно заданной даты на основе данных из Excel-файла.
@@ -164,4 +164,4 @@ def reports_page() -> None:
     # print("Выводим средние траты в рабочий и в выходной день за последние три месяца (от переданной даты):")
     # print(result)
 
-    return
+    return result
