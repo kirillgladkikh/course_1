@@ -3,8 +3,9 @@ import pandas as pd
 import logging
 from config import setup_logger
 from decimal import Decimal
-from typing import List, Dict
-from datetime import datetime
+from pandas import Timestamp
+from typing import List, Dict, Union
+# from datetime import datetime
 from src.utils import read_transactions_from_excel
 
 # Создаем логгер один раз для всего модуля
@@ -131,7 +132,7 @@ def investment_bank(
     return total_amount.quantize(Decimal('0.00'))
 
 
-def services_page() -> str:
+def services_page(input_data: Union[Timestamp, str] = Timestamp('2021-12-31 16:44:00')) -> str:
     """
     Формирует данные для страницы сервисов (в частности, расчёт суммы в «Инвесткопилке»).
 
@@ -190,12 +191,13 @@ def services_page() -> str:
 
     # Исходные данные для расчета Инвесткопилки
     coin_limit = 50
-    coin_month = '2021-12'
+    # Преобразуем в строку дату присутствующую в XLS-файле
+    coin_month_str = input_data.strftime('%Y-%m')  # '2021-12'
     # Преобразуем лимит в Decimal для использования в функции
     coin_limit_decimal = Decimal(str(coin_limit))
 
-    result = investment_bank(transactions_full, coin_month, coin_limit_decimal)
-    logger.info(f"\nСумма в инвесткопилке (лимит: {coin_limit} руб., период: {coin_month}): {result} руб.")  # Вывод для тестовых данных: ₽ 54.00
+    result = investment_bank(transactions_full, coin_month_str, coin_limit_decimal)
+    logger.info(f"\nСумма в инвесткопилке (лимит: {coin_limit} руб., период: {coin_month_str}): {result} руб.")  # Вывод для тестовых данных: ₽ 54.00
     # print(f"\nСумма в инвесткопилке (лимит: ₽ {coin_limit}, период: {coin_month}): ₽ {result}")  # Вывод для тестовых данных: ₽ 54.00
 
     return str(result)

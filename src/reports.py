@@ -4,6 +4,8 @@ import json
 import logging
 from config import setup_logger
 import datetime
+from pandas import Timestamp
+from typing import List, Dict, Union
 from typing import Callable, Any, Optional
 import pandas as pd
 
@@ -99,7 +101,7 @@ def spending_by_workday(transactions: pd.DataFrame,
 
 
 
-def reports_page() -> pd.DataFrame:
+def reports_page(input_data: Union[Timestamp, str] = Timestamp('2021-12-31 16:44:00')) -> pd.DataFrame:
     """
     Генерирует отчёт о средних тратах в рабочие и выходные дни за последние три месяца
     относительно заданной даты на основе данных из Excel-файла.
@@ -150,10 +152,10 @@ def reports_page() -> pd.DataFrame:
     # print("Входной DataFrame:")
     # print(df)
 
-    # Задаём дату присутствующую в XLS-файле
-    input_data = "2021-12-31"
+    # Преобразуем в строку дату присутствующую в XLS-файле
+    input_data_str = input_data.strftime('%Y-%m-%d')  # "2021-12-31"
 
-    result = spending_by_workday(df, input_data)
+    result = spending_by_workday(df, input_data_str)
 
     logger.info(f"Дата начала периода отчета (переданная дата): {input_data}")
     logger.info("Группируем по типу дня и считаем средние траты...")
