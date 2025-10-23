@@ -1,0 +1,79 @@
+{
+    "greeting": "Добрый день",
+    "cards": [
+        {
+            "last_digits": "4556",
+            "total_spent": 462.1,
+            "cashback": 363.0
+        },
+        {
+            "last_digits": "7197",
+            "total_spent": -16468.52,
+            "cashback": 0.0
+        }
+    ],
+    "top_transactions": [
+        {
+            "date": "03.11.2021",
+            "amount": 10000.0,
+            "category": "Другое",
+            "description": "Иван С."
+        },
+        {
+            "date": "05.11.2021",
+            "amount": -1.0,
+            "category": "Каршеринг",
+            "description": "Ситидрайв"
+        },
+        {
+            "date": "09.11.2021",
+            "amount": -1.92,
+            "category": "Каршеринг",
+            "description": "Ситидрайв"
+        },
+        {
+            "date": "02.11.2021",
+            "amount": -7.97,
+            "category": "Каршеринг",
+            "description": "Ситидрайв"
+        },
+        {
+            "date": "03.11.2021",
+            "amount": -10.0,
+            "category": "Связь",
+            "description": "Devajs Servis."
+        }
+    ],
+    "currency_rates": [
+        {
+            "currency": "USD",
+            "rate": 79.12
+        },
+        {
+            "currency": "EUR",
+            "rate": 92.05
+        }
+    ],
+    "stock_prices": [
+        {
+            "stock": "AAPL",
+            "price": 247.77
+        },
+        {
+            "stock": "AMZN",
+            "price": 216.39
+        },
+        {
+            "stock": "GOOGL",
+            "price": 245.45
+        },
+        {
+            "stock": "MSFT",
+            "price": 513.57
+        },
+        {
+            "stock": "TSLA",
+            "price": 429.24
+        }
+    ]
+}
